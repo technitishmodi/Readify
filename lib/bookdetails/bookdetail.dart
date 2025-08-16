@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:Readify/bookpage/boopageRead.dart';
 import 'package:Readify/controller/theme_controller.dart';
 import 'package:flutter/material.dart';
@@ -11,247 +12,278 @@ class Bookdetail extends StatelessWidget {
   final String author;
   final String description;
   final String aboutAuthor;
+  final double rating;
+  final int readCount;
+  final int pageCount;
 
   const Bookdetail({
     super.key,
     required this.coverUrl,
-    required this.title,
     required this.imageUrl,
+    required this.title,
     required this.author,
     required this.description,
     required this.aboutAuthor,
+    this.rating = 4.8,
+    this.readCount = 2100,
+    this.pageCount = 320,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
-    final screenWidth = MediaQuery.of(context).size.width;
-    
+    final colorScheme = theme.colorScheme;
+    final screenSize = MediaQuery.of(context).size;
+
     return Scaffold(
       extendBodyBehindAppBar: true,
+      backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        automaticallyImplyLeading: false,
         actions: [
           IconButton(
-            icon: Icon(isDarkMode ? Icons.light_mode : Icons.dark_mode),
-            onPressed: () {
-              Get.find<ThemeController>().toggleTheme();
-            },
+            icon: const Icon(Icons.light_mode_outlined, color: Colors.white),
+            onPressed: () => Get.find<ThemeController>().toggleTheme(),
           ),
           IconButton(
-            icon: const Icon(Icons.share, color: Colors.white),
-            onPressed: () async {
-              await Share.share('Check out this book: $title by $author');
-            },
+            icon: const Icon(Icons.share_outlined, color: Colors.white),
+            onPressed: () => _shareBook(),
           ),
           IconButton(
-            icon: const Icon(Icons.bookmark_border, color: Colors.white),
-            onPressed: () {},
+            icon: const Icon(Icons.bookmark_border_outlined, color: Colors.white),
+            onPressed: () => _showSnackBar("Bookmark coming soon!"),
           ),
         ],
       ),
-      body: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          SliverAppBar(
-            expandedHeight: screenWidth * 1.3,
-            pinned: true,
-            stretch: true,
-            flexibleSpace: FlexibleSpaceBar(
-              collapseMode: CollapseMode.parallax,
-              stretchModes: const [StretchMode.zoomBackground],
-              background: Stack(
-                fit: StackFit.expand,
-                children: [
-                  Image.network(
-                    imageUrl,
-                    fit: BoxFit.fitWidth, 
-                    width: screenWidth,
-                    alignment: Alignment.topCenter,
-                    loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      return Center(
-                        child: CircularProgressIndicator(
-                          value: loadingProgress.expectedTotalBytes != null
-                              ? loadingProgress.cumulativeBytesLoaded /
-                                  loadingProgress.expectedTotalBytes!
-                              : null,
-                        ),
-                      );
-                    },
-                    errorBuilder: (context, error, stackTrace) => Container(
-                      color: Colors.grey[200],
-                      child: const Icon(Icons.book, size: 100, color: Colors.grey),
-                    ),
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.bottomCenter,
-                        end: Alignment.topCenter,
-                        colors: [
-                          Colors.black.withOpacity(0.7),
-                          Colors.transparent,
-                        ],
-                        stops: const [0.1, 0.5],
-                      ),
-                    ),
-                  ),
+
+      body: Stack(
+        children: [
+          /// Gradient + Background
+          Positioned.fill(
+            child: ShaderMask(
+              shaderCallback: (rect) => LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.black.withOpacity(0.9),
+                  Colors.black.withOpacity(0.4),
+                  Colors.black.withOpacity(0.9),
                 ],
+              ).createShader(rect),
+              blendMode: BlendMode.darken,
+              child: Image.network(
+                imageUrl,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) =>
+                    Container(color: colorScheme.surfaceVariant),
               ),
             ),
           ),
-          SliverToBoxAdapter(
-            child: Container(
-              color: theme.scaffoldBackgroundColor,
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Book Title and Author
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      height: 1.3,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    "By $author",
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                  const SizedBox(height: 24),
 
-                  // Rating and Details Row
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.amber[100],
-                          borderRadius: BorderRadius.circular(4),
+          /// Scrollable Content
+          DraggableScrollableSheet(
+            initialChildSize: 0.7,
+            minChildSize: 0.55,
+            maxChildSize: 0.95,
+            builder: (context, controller) {
+              return ClipRRect(
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(36)),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: colorScheme.surface.withOpacity(0.8),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    child: ListView(
+                      controller: controller,
+                      children: [
+                        /// Handle
+                        Center(
+                          child: Container(
+                            width: 50,
+                            height: 5,
+                            margin: const EdgeInsets.only(bottom: 20),
+                            decoration: BoxDecoration(
+                              color: Colors.white24,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
                         ),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.star,
-                                color: Colors.amber, size: 16),
-                            const SizedBox(width: 4),
-                            Text(
-                              "4.8",
-                              style: TextStyle(
-                                color: Colors.amber[800],
-                                fontWeight: FontWeight.bold,
+
+                        /// Floating Book Cover
+                        Center(
+                          child: Container(
+                            height: screenSize.height * 0.28,
+                            width: screenSize.width * 0.5,
+                            margin: const EdgeInsets.only(bottom: 20),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: colorScheme.primary.withOpacity(0.6),
+                                  blurRadius: 30,
+                                  spreadRadius: 5,
+                                ),
+                              ],
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: Hero(
+                                tag: title,
+                                child: Image.network(imageUrl, fit: BoxFit.cover),
                               ),
                             ),
+                          ),
+                        ),
+
+                        /// Title + Author
+                        Center(
+                          child: Column(
+                            children: [
+                              Text(
+                                title,
+                                textAlign: TextAlign.center,
+                                style: theme.textTheme.headlineSmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: colorScheme.onSurface,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                "by $author",
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        /// Stats
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            _statCard(Icons.star, "${rating.toStringAsFixed(1)}"),
+                            _statCard(Icons.people, "${(readCount / 1000).toStringAsFixed(1)}k"),
+                            _statCard(Icons.menu_book, "$pageCount pages"),
                           ],
                         ),
-                      ),
-                      const SizedBox(width: 16),
-                      const Icon(Icons.people_outline, size: 20),
-                      const SizedBox(width: 4),
-                      const Text("2.1k reads"),
-                      const Spacer(),
-                      const Icon(Icons.access_time, size: 20),
-                      const SizedBox(width: 4),
-                      const Text("320 pages"),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
 
-                  // Description Section
-                  const Text(
-                    "Description",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    description,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey[700],
-                      height: 1.5,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
+                        const SizedBox(height: 30),
 
-                  // About Author Section
-                  const Text(
-                    "About the Author",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    aboutAuthor,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey[700],
-                      height: 1.5,
-                    ),
-                  ),
-                  const SizedBox(height: 40),
-
-                  // Action Buttons
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ElevatedButton.icon(
-                          onPressed: () {
-                            Get.to(Boopageread(pdfUrl: coverUrl));
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blueAccent,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
+                        /// Description
+                        _sectionTitle("Description", theme, colorScheme),
+                        Text(
+                          description,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                            height: 1.6,
                           ),
-                          icon: const Icon(Icons.menu_book),
-                          label: const Text("Read Now"),
                         ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: () {
-                            Get.to(Boopageread(pdfUrl: coverUrl));
-                          },
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.blueAccent,
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            side: const BorderSide(color: Colors.blueAccent),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
+
+                        const SizedBox(height: 28),
+
+                        /// About Author
+                        _sectionTitle("About the Author", theme, colorScheme),
+                        Text(
+                          aboutAuthor,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                            height: 1.6,
                           ),
-                          icon: const Icon(Icons.headphones),
-                          label: const Text("Listen"),
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 120),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 24),
-                ],
-              ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+
+      /// Floating Center Action Button
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        child: FloatingActionButton.extended(
+          onPressed: () => Get.to(() => Boopageread(pdfUrl: coverUrl)),
+          backgroundColor: colorScheme.primary,
+          icon: const Icon(Icons.menu_book_outlined, size: 26),
+          label: const Text("Read Now", style: TextStyle(fontSize: 16)),
+        ),
+      ),
+    );
+  }
+
+  Widget _statCard(IconData icon, String text) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        gradient: LinearGradient(
+          colors: [Colors.purple.withOpacity(0.6), Colors.blue.withOpacity(0.6)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.25),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          )
+        ],
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.white, size: 20),
+          const SizedBox(width: 6),
+          Text(
+            text,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _sectionTitle(String text, ThemeData theme, ColorScheme colorScheme) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Text(
+        text,
+        style: theme.textTheme.titleLarge?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: colorScheme.primary,
+        ),
+      ),
+    );
+  }
+
+  void _shareBook() {
+    Share.share(
+      'Check out "$title" by $author - A must read!',
+      subject: 'Book Recommendation: $title',
+    );
+  }
+
+  void _showSnackBar(String message) {
+    Get.snackbar(
+      "Info",
+      message,
+      snackPosition: SnackPosition.BOTTOM,
+      margin: const EdgeInsets.all(16),
+      borderRadius: 12,
+      duration: const Duration(seconds: 2),
     );
   }
 }

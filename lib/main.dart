@@ -1,8 +1,6 @@
 import 'package:Readify/controller/Bookcontroller.dart';
 import 'package:Readify/controller/theme_controller.dart';
-import 'package:Readify/screen/homeScreen.dart';
-import 'package:Readify/screen/signup_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
+import 'package:Readify/screen/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -42,68 +40,39 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final _auth = firebase_auth.FirebaseAuth.instance;
-  late Stream<firebase_auth.User?> _authStateChanges;
   late ThemeController _themeController;
-  late BookController _bookController;
 
   @override
   void initState() {
     super.initState();
-    _authStateChanges = _auth.authStateChanges();
     _themeController = Get.find<ThemeController>();
-    _bookController = Get.find<BookController>();
     _themeController.isDarkMode.value = widget.initialDarkMode;
   }
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
+    return Obx(() => GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Readify',
-      theme: ThemeData.light().copyWith(
+      theme: ThemeData.light(useMaterial3: true).copyWith(
         primaryColor: const Color(0xFF4E6EFF),
-        colorScheme: ColorScheme.fromSwatch().copyWith(
-          secondary: const Color(0xFF4E6EFF),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF4E6EFF),
+          brightness: Brightness.light,
         ),
         scaffoldBackgroundColor: const Color(0xFFF5F7FA),
       ),
-      darkTheme: ThemeData.dark().copyWith(
+      darkTheme: ThemeData.dark(useMaterial3: true).copyWith(
         primaryColor: const Color(0xFF4E6EFF),
-        colorScheme: ColorScheme.dark().copyWith(
-          secondary: const Color(0xFF4E6EFF),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF4E6EFF),
+          brightness: Brightness.dark,
         ),
         scaffoldBackgroundColor: Colors.grey[900],
         cardColor: Colors.grey[800],
-        textTheme: TextTheme(
-          bodyLarge: TextStyle(color: Colors.grey[300]),
-          bodyMedium: TextStyle(color: Colors.grey[300]),
-        ),
       ),
       themeMode: _themeController.isDarkMode.value ? ThemeMode.dark : ThemeMode.light,
-      home: StreamBuilder<firebase_auth.User?>(
-        stream: _authStateChanges,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Scaffold(
-              body: Center(child: CircularProgressIndicator()),
-            );
-          }
-
-          final user = snapshot.data;
-          if (user != null) {
-            // Normal user flow only
-            _bookController.fetchThoughts();
-            return HomePage(
-              userName: user.displayName ?? 'User',
-              userEmail: user.email ?? 'No email',
-              userPhoto: user.photoURL,
-            );
-          }
-
-          return const SignupScreen();
-        },
-      ),
-    );
+      home: const SplashScreen(),
+    ));
   }
 }

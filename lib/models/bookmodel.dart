@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Bookmodel {
@@ -133,6 +132,7 @@ class ThoughtPost {
     'content': content,
     'timestamp': timestamp,
     'likes': likes,
+    'likedBy': likedBy,
   };
 }
 

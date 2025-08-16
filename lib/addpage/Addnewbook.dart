@@ -183,12 +183,7 @@ class AddNewbook extends StatelessWidget {
                                     TextButton(
                                       onPressed: () {
                                         Navigator.pop(context);
-                                        bookController.createBook(visibility: 'public');
-                                        Get.snackbar(
-                                          'Success', 
-                                          'Book added as public',
-                                          duration: Duration(seconds: 2),
-                                        );
+                                        _showCategorySelectionDialog(context);
                                       },
                                       child: Text("Public (Everyone)"),
                                     ),
@@ -226,6 +221,45 @@ class AddNewbook extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  void _showCategorySelectionDialog(BuildContext context) {
+    final categories = [
+      {'name': 'Romance', 'icon': Icons.favorite_outline},
+      {'name': 'Travel', 'icon': Icons.travel_explore_outlined},
+      {'name': 'Horror', 'icon': Icons.psychology_outlined},
+      {'name': 'Document', 'icon': Icons.description_outlined},
+      {'name': 'Fiction', 'icon': Icons.auto_stories_outlined},
+    ];
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Select Book Category"),
+          content: Text("Choose a category for your public book:"),
+          actions: categories.map((category) {
+            return TextButton.icon(
+              onPressed: () {
+                Navigator.pop(context);
+                BookController bookController = Get.put(BookController());
+                bookController.createBook(
+                  visibility: 'public',
+                  category: category['name'] as String,
+                );
+                Get.snackbar(
+                  'Success', 
+                  'Book added as public in ${category['name']} category',
+                  duration: Duration(seconds: 2),
+                );
+              },
+              icon: Icon(category['icon'] as IconData, size: 18),
+              label: Text(category['name'] as String),
+            );
+          }).toList(),
+        );
+      },
     );
   }
 }

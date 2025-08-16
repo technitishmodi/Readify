@@ -168,7 +168,7 @@ String _extractPathFromUrl(String url) {
       if (thoughtController.text.isEmpty) return;
 
       final newThought = ThoughtPost(
-        [Uuid().v1()], // Pass the required positional argument as a list
+        [], // Empty likedBy list initially
         id: Uuid().v1(),
         userId: userId,
         userName: userName,
@@ -432,7 +432,7 @@ String _extractPathFromUrl(String url) {
     }
   }
 
-  Future<void> createBook({String visibility = 'public'}) async {
+  Future<void> createBook({String visibility = 'public', String? category}) async {
     try {
       if (title.text.isEmpty || pdfUrl.isEmpty) {
         throw Exception('Title and PDF are required');
@@ -452,6 +452,7 @@ String _extractPathFromUrl(String url) {
         auther: authorname.text,
         bookUrl: pdfUrl.value,
         imageUrl: imageUrl.value,
+        category: category, // Add category to the book
       );
 
       // Save to main Book collection
@@ -500,5 +501,148 @@ String _extractPathFromUrl(String url) {
           'Error', 'Failed to add book to your collection: ${e.toString()}');
       rethrow;
     }
+  }
+
+  // User-specific book management functions
+  Future<void> deleteUserBook(String bookId) async {
+    try {
+      isLoading(true);
+      final user = auth.currentUser;
+      if (user == null) throw Exception('User not logged in');
+
+      // First verify the book belongs to current user
+      final bookDoc = await db.collection("Book").doc(bookId).get();
+      if (!bookDoc.exists) throw Exception('Book not found');
+      
+      final bookData = bookDoc.data();
+      if (bookData?['uploaderId'] != user.uid) {
+        throw Exception('You can only delete your own books');
+      }
+
+      // Delete from main collection
+      await db.collection("Book").doc(bookId).delete();
+
+      // Delete from user's personal collection
+      await db
+          .collection("UserBook")
+          .doc(user.uid)
+          .collection("Books")
+          .doc(bookId)
+          .delete();
+
+      // Delete files from Supabase storage if they exist
+      try {
+        if (bookData?['bookUrl'] != null) {
+          final pdfPath = _extractPathFromUrl(bookData!['bookUrl']);
+          await Supabase.instance.client.storage
+              .from(bookData['bookUrl'].toString().contains('.pdf') ? bucketName_1 : bucketName)
+              .remove([pdfPath]);
+        }
+        
+        if (bookData?['imageUrl'] != null) {
+          final imagePath = _extractPathFromUrl(bookData!['imageUrl']);
+          await Supabase.instance.client.storage
+              .from(bucketName)
+              .remove([imagePath]);
+        }
+      } catch (e) {
+        print('Error deleting files from storage: $e');
+      }
+
+      // Refresh lists
+      await fetchBooks();
+      await fetchUserBooks();
+
+      Get.snackbar('Success', 'Book deleted successfully');
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to delete book: ${e.toString()}');
+      rethrow;
+    } finally {
+      isLoading(false);
+    }
+  }
+
+  // Edit user's book
+  Future<void> editUserBook(String bookId, {
+    String? newTitle,
+    String? newDescription,
+    String? newAuthorName,
+    String? newAboutAuthor,
+    String? newVisibility,
+  }) async {
+    try {
+      isLoading(true);
+      final user = auth.currentUser;
+      if (user == null) throw Exception('User not logged in');
+
+      // Verify the book belongs to current user
+      final bookDoc = await db.collection("Book").doc(bookId).get();
+      if (!bookDoc.exists) throw Exception('Book not found');
+      
+      final bookData = bookDoc.data();
+      if (bookData?['uploaderId'] != user.uid) {
+        throw Exception('You can only edit your own books');
+      }
+
+      // Prepare update data
+      Map<String, dynamic> updateData = {};
+      if (newTitle != null) updateData['title'] = newTitle;
+      if (newDescription != null) updateData['descriptions'] = newDescription;
+      if (newAuthorName != null) updateData['auther'] = newAuthorName;
+      if (newAboutAuthor != null) updateData['aboutAuthor'] = newAboutAuthor;
+      if (newVisibility != null) updateData['visibility'] = newVisibility;
+
+      if (updateData.isEmpty) {
+        throw Exception('No changes to update');
+      }
+
+      // Update in main collection
+      await db.collection("Book").doc(bookId).update(updateData);
+
+      // Update in user's personal collection
+      await db
+          .collection("UserBook")
+          .doc(user.uid)
+          .collection("Books")
+          .doc(bookId)
+          .update(updateData);
+
+      // Refresh lists
+      await fetchBooks();
+      await fetchUserBooks();
+
+      Get.snackbar('Success', 'Book updated successfully');
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to update book: ${e.toString()}');
+      rethrow;
+    } finally {
+      isLoading(false);
+    }
+  }
+
+  // Populate edit form with existing book data
+  void populateEditForm(Bookmodel book) {
+    title.text = book.title ?? '';
+    des.text = book.descriptions ?? '';
+    authorname.text = book.auther ?? '';
+    aboutauthor.text = book.aboutAuthor ?? '';
+    imageUrl.value = book.imageUrl ?? '';
+    pdfUrl.value = book.bookUrl ?? '';
+  }
+
+  // Clear edit form
+  void clearEditForm() {
+    title.clear();
+    des.clear();
+    authorname.clear();
+    aboutauthor.clear();
+    imageUrl.value = '';
+    pdfUrl.value = '';
+  }
+
+  // Check if user owns the book
+  bool isUserBookOwner(Bookmodel book) {
+    final user = auth.currentUser;
+    return user != null && book.uploaderId == user.uid;
   }
 }
