@@ -607,21 +607,7 @@ class _ProfilepageState extends State<Profilepage>
       width: double.infinity,
       margin: const EdgeInsets.symmetric(horizontal: 50),
       child: ElevatedButton.icon(
-        onPressed: () async {
-          try {
-            await GoogleSignIn().signOut();
-            await FirebaseAuth.instance.signOut();
-            Get.offAllNamed('/login');
-          } catch (e) {
-            Get.snackbar(
-              'Error',
-              'Failed to sign out. Please try again.',
-              snackPosition: SnackPosition.BOTTOM,
-              backgroundColor: Colors.red,
-              colorText: Colors.white,
-            );
-          }
-        },
+        onPressed: _signOut,
         icon: const Icon(Icons.logout, size: 16),
         label: const Text('Sign Out'),
         style: ElevatedButton.styleFrom(

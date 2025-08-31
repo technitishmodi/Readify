@@ -10,6 +10,8 @@ import 'package:Readify/profilepage/TrendingBooksPage.dart';
 import 'package:Readify/screen/aboutAdmin.dart';
 import 'package:Readify/screen/admin_page.dart';
 import 'package:Readify/screen/reading_analytics_screen.dart';
+import 'package:Readify/screen/reading_goals_screen.dart';
+import 'package:Readify/screen/ai_insights_screen.dart';
 import 'package:Readify/screen/smart_bookmarks_screen.dart';
 import 'package:Readify/screen/signup_screen.dart';
 import 'package:Readify/th&&re/request_book.dart';
@@ -588,6 +590,22 @@ class _ModernDrawer extends StatelessWidget {
             onTap: () {
               Navigator.pop(context);
               Get.to(() => const ReadingAnalyticsScreen());
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.flag_outlined),
+            title: const Text('Reading Goals'),
+            onTap: () {
+              Navigator.pop(context);
+              Get.to(() => const ReadingGoalsScreen());
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.psychology_outlined),
+            title: const Text('AI Insights'),
+            onTap: () {
+              Navigator.pop(context);
+              Get.to(() => const AIInsightsScreen());
             },
           ),
           ListTile(

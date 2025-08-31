@@ -146,11 +146,13 @@ class _BookdetailState extends State<Bookdetail>
               ).createShader(rect),
               blendMode: BlendMode.darken,
               child: Image.network(
-                widget.imageUrl,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) =>
-                    Container(color: colorScheme.surfaceContainerHighest),
-              ),
+  widget.imageUrl,
+  fit: BoxFit.contain, // keeps full image visible
+  alignment: Alignment.topCenter,
+  errorBuilder: (_, __, ___) =>
+      Container(color: colorScheme.surfaceContainerHighest),
+),
+
             ),
           ),
 
@@ -211,7 +213,7 @@ class _BookdetailState extends State<Bookdetail>
                                     tag: widget.title,
                                     child: Image.network(
                                       widget.imageUrl, 
-                                      fit: BoxFit.cover,
+                                      fit: BoxFit.contain,
                                       errorBuilder: (_, __, ___) => Container(
                                         color: colorScheme.surfaceContainerHighest,
                                         child: const Icon(Icons.book, size: 50),
