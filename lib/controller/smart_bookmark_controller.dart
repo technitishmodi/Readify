@@ -7,13 +7,14 @@ import 'package:uuid/uuid.dart';
 class SmartBookmarkController extends GetxController {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  
+
   // Observable variables
-  final RxMap<String, List<SmartBookmark>> bookBookmarks = <String, List<SmartBookmark>>{}.obs;
+  final RxMap<String, List<SmartBookmark>> bookBookmarks =
+      <String, List<SmartBookmark>>{}.obs;
   final RxList<BookmarkCategory> categories = <BookmarkCategory>[].obs;
   final RxBool isLoading = false.obs;
   final RxString selectedCategory = 'All'.obs;
-  
+
   // Text controllers for bookmark creation
   final TextEditingController noteController = TextEditingController();
   final TextEditingController tagController = TextEditingController();
@@ -71,13 +72,14 @@ class SmartBookmarkController extends GetxController {
     try {
       isLoading(true);
       final user = _auth.currentUser;
-      
+
       print('DEBUG: Loading bookmarks...');
       print('DEBUG: Current user: ${user?.uid}');
-      
+
       if (user == null) {
         print('DEBUG: No authenticated user found');
-        Get.snackbar('Authentication Required', 'Please sign in to view bookmarks');
+        Get.snackbar(
+            'Authentication Required', 'Please sign in to view bookmarks');
         return;
       }
 
@@ -90,13 +92,13 @@ class SmartBookmarkController extends GetxController {
           .get();
 
       print('DEBUG: Found ${snapshot.docs.length} bookmark documents');
-      
+
       bookBookmarks.clear();
       for (var doc in snapshot.docs) {
         try {
           print('DEBUG: Processing bookmark doc: ${doc.id}');
           print('DEBUG: Bookmark data: ${doc.data()}');
-          
+
           final bookmark = SmartBookmark.fromJson(doc.data());
           if (bookBookmarks[bookmark.bookId] == null) {
             bookBookmarks[bookmark.bookId] = [];
@@ -107,10 +109,9 @@ class SmartBookmarkController extends GetxController {
           print('DEBUG: Error processing bookmark doc ${doc.id}: $e');
         }
       }
-      
+
       print('DEBUG: Total books with bookmarks: ${bookBookmarks.keys.length}');
       print('DEBUG: Bookmark data loaded successfully');
-      
     } catch (e) {
       print('DEBUG: Error loading bookmarks: $e');
       Get.snackbar('Error', 'Failed to load bookmarks: ${e.toString()}');
@@ -130,25 +131,26 @@ class SmartBookmarkController extends GetxController {
   }) async {
     try {
       final user = _auth.currentUser;
-      
+
       print('DEBUG: Creating bookmark...');
       print('DEBUG: User: ${user?.uid}');
       print('DEBUG: BookId: $bookId');
       print('DEBUG: Selected text: $selectedText');
-      
+
       if (user == null) {
         print('DEBUG: No authenticated user for bookmark creation');
-        Get.snackbar('Authentication Required', 'Please sign in to create bookmarks');
+        Get.snackbar(
+            'Authentication Required', 'Please sign in to create bookmarks');
         return;
       }
 
       // AI-powered content analysis (simplified version)
       final category = _analyzeContent(selectedText, userNote);
       final autoTags = _generateTags(selectedText, userNote);
-      
+
       print('DEBUG: Generated category: $category');
       print('DEBUG: Generated tags: $autoTags');
-      
+
       final bookmark = SmartBookmark(
         id: const Uuid().v4(),
         bookId: bookId,
@@ -183,7 +185,8 @@ class SmartBookmarkController extends GetxController {
       bookBookmarks[bookId]!.insert(0, bookmark);
       bookBookmarks.refresh();
 
-      print('DEBUG: Local state updated. Total bookmarks for book: ${bookBookmarks[bookId]?.length}');
+      print(
+          'DEBUG: Local state updated. Total bookmarks for book: ${bookBookmarks[bookId]?.length}');
       Get.snackbar('Success', 'Smart bookmark created!');
     } catch (e) {
       print('DEBUG: Error creating bookmark: $e');
@@ -193,60 +196,73 @@ class SmartBookmarkController extends GetxController {
 
   // AI-powered content analysis for categorization
   String _analyzeContent(String selectedText, String? userNote) {
-    final text = '${selectedText.toLowerCase()} ${userNote?.toLowerCase() ?? ''}';
-    
+    final text =
+        '${selectedText.toLowerCase()} ${userNote?.toLowerCase() ?? ''}';
+
     // Simple keyword-based categorization (can be enhanced with ML)
     if (text.contains(RegExp(r'\b(quote|said|says|according|stated)\b'))) {
       return 'quotes';
-    } else if (text.contains(RegExp(r'\b(important|key|crucial|significant|vital)\b'))) {
+    } else if (text
+        .contains(RegExp(r'\b(important|key|crucial|significant|vital)\b'))) {
       return 'important';
-    } else if (text.contains(RegExp(r'\b(research|study|analysis|data|findings)\b'))) {
+    } else if (text
+        .contains(RegExp(r'\b(research|study|analysis|data|findings)\b'))) {
       return 'research';
-    } else if (text.contains(RegExp(r'\b(review|later|remember|check|revisit)\b'))) {
+    } else if (text
+        .contains(RegExp(r'\b(review|later|remember|check|revisit)\b'))) {
       return 'review';
-    } else if (text.contains(RegExp(r'\b(definition|concept|theory|principle)\b'))) {
+    } else if (text
+        .contains(RegExp(r'\b(definition|concept|theory|principle)\b'))) {
       return 'reference';
     }
-    
+
     return 'all';
   }
 
   // Generate automatic tags based on content
   List<String> _generateTags(String selectedText, String? userNote) {
-    final text = '${selectedText.toLowerCase()} ${userNote?.toLowerCase() ?? ''}';
+    final text =
+        '${selectedText.toLowerCase()} ${userNote?.toLowerCase() ?? ''}';
     final tags = <String>[];
-    
+
     // Extract potential tags using simple NLP techniques
     final words = text.split(RegExp(r'\W+'));
-    final importantWords = words.where((word) => 
-        word.length > 4 && 
-        !_stopWords.contains(word) &&
-        word.contains(RegExp(r'^[a-zA-Z]+$'))
-    ).toSet();
-    
+    final importantWords = words
+        .where((word) =>
+            word.length > 4 &&
+            !_stopWords.contains(word) &&
+            word.contains(RegExp(r'^[a-zA-Z]+$')))
+        .toSet();
+
     // Add top 3 most relevant words as tags
     tags.addAll(importantWords.take(3));
-    
+
     // Add contextual tags
-    if (text.contains(RegExp(r'\b(chapter|section)\b'))) tags.add('chapter-note');
-    if (text.contains(RegExp(r'\b(author|writer)\b'))) tags.add('author-insight');
+    if (text.contains(RegExp(r'\b(chapter|section)\b')))
+      tags.add('chapter-note');
+    if (text.contains(RegExp(r'\b(author|writer)\b')))
+      tags.add('author-insight');
     if (text.contains(RegExp(r'\b(conclusion|summary)\b'))) tags.add('summary');
-    
+
     return tags;
   }
 
   // Calculate importance score (0.0 to 1.0)
   double _calculateImportance(String selectedText, String? userNote) {
     double score = 0.5; // Base score
-    
-    final text = '${selectedText.toLowerCase()} ${userNote?.toLowerCase() ?? ''}';
-    
+
+    final text =
+        '${selectedText.toLowerCase()} ${userNote?.toLowerCase() ?? ''}';
+
     // Increase score for important keywords
-    if (text.contains(RegExp(r'\b(important|key|crucial|significant)\b'))) score += 0.2;
+    if (text.contains(RegExp(r'\b(important|key|crucial|significant)\b')))
+      score += 0.2;
     if (text.contains(RegExp(r'\b(remember|note|highlight)\b'))) score += 0.1;
-    if (selectedText.length > 100) score += 0.1; // Longer selections might be more important
-    if (userNote != null && userNote.isNotEmpty) score += 0.1; // User added note
-    
+    if (selectedText.length > 100)
+      score += 0.1; // Longer selections might be more important
+    if (userNote != null && userNote.isNotEmpty)
+      score += 0.1; // User added note
+
     return score.clamp(0.0, 1.0);
   }
 
@@ -261,7 +277,7 @@ class SmartBookmarkController extends GetxController {
       return bookBookmarks.values.expand((list) => list).toList()
         ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
     }
-    
+
     return bookBookmarks.values
         .expand((list) => list)
         .where((bookmark) => bookmark.category == categoryId)
@@ -277,7 +293,8 @@ class SmartBookmarkController extends GetxController {
         .where((bookmark) =>
             bookmark.selectedText.toLowerCase().contains(lowerQuery) ||
             bookmark.userNote.toLowerCase().contains(lowerQuery) ||
-            bookmark.tags.any((tag) => tag.toLowerCase().contains(lowerQuery)) ||
+            bookmark.tags
+                .any((tag) => tag.toLowerCase().contains(lowerQuery)) ||
             bookmark.bookTitle.toLowerCase().contains(lowerQuery))
         .toList()
       ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
@@ -297,7 +314,8 @@ class SmartBookmarkController extends GetxController {
           .delete();
 
       // Update local state
-      bookBookmarks[bookId]?.removeWhere((bookmark) => bookmark.id == bookmarkId);
+      bookBookmarks[bookId]
+          ?.removeWhere((bookmark) => bookmark.id == bookmarkId);
       bookBookmarks.refresh();
 
       Get.snackbar('Success', 'Bookmark deleted');
@@ -339,28 +357,68 @@ class SmartBookmarkController extends GetxController {
   Map<String, dynamic> getBookmarkStats() {
     final allBookmarks = bookBookmarks.values.expand((list) => list).toList();
     final categoryStats = <String, int>{};
-    
+
     for (var category in categories) {
-      categoryStats[category.name] = allBookmarks
-          .where((b) => b.category == category.id)
-          .length;
+      categoryStats[category.name] =
+          allBookmarks.where((b) => b.category == category.id).length;
     }
-    
+
     return {
       'totalBookmarks': allBookmarks.length,
       'booksWithBookmarks': bookBookmarks.keys.length,
       'categoryStats': categoryStats,
-      'averageImportance': allBookmarks.isEmpty ? 0.0 : 
-          allBookmarks.map((b) => b.importance).reduce((a, b) => a + b) / allBookmarks.length,
+      'averageImportance': allBookmarks.isEmpty
+          ? 0.0
+          : allBookmarks.map((b) => b.importance).reduce((a, b) => a + b) /
+              allBookmarks.length,
     };
   }
 
   // Common stop words to filter out from tags
   static const _stopWords = {
-    'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of',
-    'with', 'by', 'is', 'are', 'was', 'were', 'be', 'been', 'have', 'has', 'had',
-    'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might',
-    'this', 'that', 'these', 'those', 'i', 'you', 'he', 'she', 'it', 'we', 'they'
+    'the',
+    'a',
+    'an',
+    'and',
+    'or',
+    'but',
+    'in',
+    'on',
+    'at',
+    'to',
+    'for',
+    'of',
+    'with',
+    'by',
+    'is',
+    'are',
+    'was',
+    'were',
+    'be',
+    'been',
+    'have',
+    'has',
+    'had',
+    'do',
+    'does',
+    'did',
+    'will',
+    'would',
+    'could',
+    'should',
+    'may',
+    'might',
+    'this',
+    'that',
+    'these',
+    'those',
+    'i',
+    'you',
+    'he',
+    'she',
+    'it',
+    'we',
+    'they'
   };
 }
 
@@ -393,51 +451,52 @@ class SmartBookmark {
   });
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'bookId': bookId,
-    'bookTitle': bookTitle,
-    'pageNumber': pageNumber,
-    'selectedText': selectedText,
-    'userNote': userNote,
-    'category': category,
-    'tags': tags,
-    'createdAt': createdAt.toIso8601String(),
-    'userId': userId,
-    'importance': importance,
-  };
+        'id': id,
+        'bookId': bookId,
+        'bookTitle': bookTitle,
+        'pageNumber': pageNumber,
+        'selectedText': selectedText,
+        'userNote': userNote,
+        'category': category,
+        'tags': tags,
+        'createdAt': createdAt.toIso8601String(),
+        'userId': userId,
+        'importance': importance,
+      };
 
   factory SmartBookmark.fromJson(Map<String, dynamic> json) => SmartBookmark(
-    id: json['id'] ?? '',
-    bookId: json['bookId'] ?? '',
-    bookTitle: json['bookTitle'] ?? '',
-    pageNumber: json['pageNumber'] ?? 0,
-    selectedText: json['selectedText'] ?? '',
-    userNote: json['userNote'] ?? '',
-    category: json['category'] ?? 'all',
-    tags: List<String>.from(json['tags'] ?? []),
-    createdAt: DateTime.parse(json['createdAt']),
-    userId: json['userId'] ?? '',
-    importance: (json['importance'] ?? 0.5).toDouble(),
-  );
+        id: json['id'] ?? '',
+        bookId: json['bookId'] ?? '',
+        bookTitle: json['bookTitle'] ?? '',
+        pageNumber: json['pageNumber'] ?? 0,
+        selectedText: json['selectedText'] ?? '',
+        userNote: json['userNote'] ?? '',
+        category: json['category'] ?? 'all',
+        tags: List<String>.from(json['tags'] ?? []),
+        createdAt: DateTime.parse(json['createdAt']),
+        userId: json['userId'] ?? '',
+        importance: (json['importance'] ?? 0.5).toDouble(),
+      );
 
   SmartBookmark copyWith({
     String? userNote,
     String? category,
     List<String>? tags,
     double? importance,
-  }) => SmartBookmark(
-    id: id,
-    bookId: bookId,
-    bookTitle: bookTitle,
-    pageNumber: pageNumber,
-    selectedText: selectedText,
-    userNote: userNote ?? this.userNote,
-    category: category ?? this.category,
-    tags: tags ?? this.tags,
-    createdAt: createdAt,
-    userId: userId,
-    importance: importance ?? this.importance,
-  );
+  }) =>
+      SmartBookmark(
+        id: id,
+        bookId: bookId,
+        bookTitle: bookTitle,
+        pageNumber: pageNumber,
+        selectedText: selectedText,
+        userNote: userNote ?? this.userNote,
+        category: category ?? this.category,
+        tags: tags ?? this.tags,
+        createdAt: createdAt,
+        userId: userId,
+        importance: importance ?? this.importance,
+      );
 }
 
 class BookmarkCategory {

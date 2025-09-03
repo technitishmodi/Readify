@@ -38,64 +38,72 @@ class SmartBookmarksScreen extends StatelessWidget {
         children: [
           _buildCategoryTabs(bookmarkController, colorScheme),
           Expanded(
-            child: Obx(() => _buildBookmarksList(bookmarkController, colorScheme)),
+            child:
+                Obx(() => _buildBookmarksList(bookmarkController, colorScheme)),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildCategoryTabs(SmartBookmarkController controller, ColorScheme colorScheme) {
+  Widget _buildCategoryTabs(
+      SmartBookmarkController controller, ColorScheme colorScheme) {
     return Container(
       height: 60,
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Obx(() => ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: controller.categories.length,
-        itemBuilder: (context, index) {
-          final category = controller.categories[index];
-          final isSelected = controller.selectedCategory.value == category.id;
-          
-          return Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: FilterChip(
-              selected: isSelected,
-              label: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    category.icon,
-                    size: 16,
-                    color: isSelected ? colorScheme.onPrimary : category.color,
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            itemCount: controller.categories.length,
+            itemBuilder: (context, index) {
+              final category = controller.categories[index];
+              final isSelected =
+                  controller.selectedCategory.value == category.id;
+
+              return Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: FilterChip(
+                  selected: isSelected,
+                  label: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        category.icon,
+                        size: 16,
+                        color:
+                            isSelected ? colorScheme.onPrimary : category.color,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(category.name),
+                    ],
                   ),
-                  const SizedBox(width: 4),
-                  Text(category.name),
-                ],
-              ),
-              onSelected: (_) => controller.selectedCategory.value = category.id,
-              backgroundColor: colorScheme.surface,
-              selectedColor: category.color,
-              checkmarkColor: colorScheme.onPrimary,
-            ),
-          );
-        },
-      )),
+                  onSelected: (_) =>
+                      controller.selectedCategory.value = category.id,
+                  backgroundColor: colorScheme.surface,
+                  selectedColor: category.color,
+                  checkmarkColor: colorScheme.onPrimary,
+                ),
+              );
+            },
+          )),
     );
   }
 
-  Widget _buildBookmarksList(SmartBookmarkController controller, ColorScheme colorScheme) {
+  Widget _buildBookmarksList(
+      SmartBookmarkController controller, ColorScheme colorScheme) {
     if (controller.isLoading.value) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    final bookmarks = controller.getBookmarksByCategory(controller.selectedCategory.value);
-    
+    final bookmarks =
+        controller.getBookmarksByCategory(controller.selectedCategory.value);
+
     print('DEBUG: Building bookmarks list');
     print('DEBUG: Selected category: ${controller.selectedCategory.value}');
     print('DEBUG: Total bookmarks found: ${bookmarks.length}');
-    print('DEBUG: All bookmark keys: ${controller.bookBookmarks.keys.toList()}');
-    
+    print(
+        'DEBUG: All bookmark keys: ${controller.bookBookmarks.keys.toList()}');
+
     if (bookmarks.isEmpty) {
       return Center(
         child: Column(
@@ -142,7 +150,8 @@ class SmartBookmarksScreen extends StatelessWidget {
         itemCount: bookmarks.length,
         itemBuilder: (context, index) {
           final bookmark = bookmarks[index];
-          print('DEBUG: Displaying bookmark ${index + 1}: ${bookmark.selectedText.substring(0, bookmark.selectedText.length > 50 ? 50 : bookmark.selectedText.length)}...');
+          print(
+              'DEBUG: Displaying bookmark ${index + 1}: ${bookmark.selectedText.substring(0, bookmark.selectedText.length > 50 ? 50 : bookmark.selectedText.length)}...');
           return _BookmarkCard(
             bookmark: bookmark,
             onTap: () => _showBookmarkDetails(context, bookmark, controller),
@@ -154,16 +163,18 @@ class SmartBookmarksScreen extends StatelessWidget {
     );
   }
 
-  void _showSearchDialog(BuildContext context, SmartBookmarkController controller) {
+  void _showSearchDialog(
+      BuildContext context, SmartBookmarkController controller) {
     showDialog(
       context: context,
       builder: (context) => _SearchBookmarksDialog(controller: controller),
     );
   }
 
-  void _showStatsDialog(BuildContext context, SmartBookmarkController controller) {
+  void _showStatsDialog(
+      BuildContext context, SmartBookmarkController controller) {
     final stats = controller.getBookmarkStats();
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -174,13 +185,15 @@ class SmartBookmarksScreen extends StatelessWidget {
           children: [
             _StatRow('Total Bookmarks', '${stats['totalBookmarks']}'),
             _StatRow('Books with Bookmarks', '${stats['booksWithBookmarks']}'),
-            _StatRow('Average Importance', '${(stats['averageImportance'] * 100).toStringAsFixed(0)}%'),
+            _StatRow('Average Importance',
+                '${(stats['averageImportance'] * 100).toStringAsFixed(0)}%'),
             const SizedBox(height: 16),
-            const Text('By Category:', style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text('By Category:',
+                style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             ...((stats['categoryStats'] as Map<String, int>).entries.map(
-              (entry) => _StatRow(entry.key, '${entry.value}'),
-            )),
+                  (entry) => _StatRow(entry.key, '${entry.value}'),
+                )),
           ],
         ),
         actions: [
@@ -193,7 +206,8 @@ class SmartBookmarksScreen extends StatelessWidget {
     );
   }
 
-  void _showBookmarkDetails(BuildContext context, SmartBookmark bookmark, SmartBookmarkController controller) {
+  void _showBookmarkDetails(BuildContext context, SmartBookmark bookmark,
+      SmartBookmarkController controller) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -208,7 +222,8 @@ class SmartBookmarksScreen extends StatelessWidget {
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
-              const Text('Selected Text:', style: TextStyle(fontWeight: FontWeight.w600)),
+              const Text('Selected Text:',
+                  style: TextStyle(fontWeight: FontWeight.w600)),
               const SizedBox(height: 8),
               Container(
                 padding: const EdgeInsets.all(12),
@@ -220,17 +235,20 @@ class SmartBookmarksScreen extends StatelessWidget {
               ),
               if (bookmark.userNote.isNotEmpty) ...[
                 const SizedBox(height: 16),
-                const Text('Your Note:', style: TextStyle(fontWeight: FontWeight.w600)),
+                const Text('Your Note:',
+                    style: TextStyle(fontWeight: FontWeight.w600)),
                 const SizedBox(height: 8),
                 Text(bookmark.userNote),
               ],
               const SizedBox(height: 16),
               Wrap(
                 spacing: 8,
-                children: bookmark.tags.map((tag) => Chip(
-                  label: Text(tag),
-                  backgroundColor: Colors.blue[100],
-                )).toList(),
+                children: bookmark.tags
+                    .map((tag) => Chip(
+                          label: Text(tag),
+                          backgroundColor: Colors.blue[100],
+                        ))
+                    .toList(),
               ),
             ],
           ),
@@ -252,10 +270,11 @@ class SmartBookmarksScreen extends StatelessWidget {
     );
   }
 
-  void _showEditDialog(BuildContext context, SmartBookmark bookmark, SmartBookmarkController controller) {
+  void _showEditDialog(BuildContext context, SmartBookmark bookmark,
+      SmartBookmarkController controller) {
     controller.noteController.text = bookmark.userNote;
     String selectedCategory = bookmark.category;
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -281,18 +300,23 @@ class SmartBookmarksScreen extends StatelessWidget {
               StatefulBuilder(
                 builder: (context, setState) => DropdownButtonFormField<String>(
                   value: selectedCategory,
-                  decoration: const InputDecoration(border: OutlineInputBorder()),
-                  items: controller.categories.map((category) => DropdownMenuItem(
-                    value: category.id,
-                    child: Row(
-                      children: [
-                        Icon(category.icon, size: 16, color: category.color),
-                        const SizedBox(width: 8),
-                        Text(category.name),
-                      ],
-                    ),
-                  )).toList(),
-                  onChanged: (value) => setState(() => selectedCategory = value!),
+                  decoration:
+                      const InputDecoration(border: OutlineInputBorder()),
+                  items: controller.categories
+                      .map((category) => DropdownMenuItem(
+                            value: category.id,
+                            child: Row(
+                              children: [
+                                Icon(category.icon,
+                                    size: 16, color: category.color),
+                                const SizedBox(width: 8),
+                                Text(category.name),
+                              ],
+                            ),
+                          ))
+                      .toList(),
+                  onChanged: (value) =>
+                      setState(() => selectedCategory = value!),
                 ),
               ),
             ],
@@ -320,7 +344,8 @@ class SmartBookmarksScreen extends StatelessWidget {
     );
   }
 
-  void _showDeleteDialog(BuildContext context, SmartBookmark bookmark, SmartBookmarkController controller) {
+  void _showDeleteDialog(BuildContext context, SmartBookmark bookmark,
+      SmartBookmarkController controller) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -362,7 +387,7 @@ class _BookmarkCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final category = _getCategoryInfo(bookmark.category);
-    
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
@@ -446,17 +471,21 @@ class _BookmarkCard extends StatelessWidget {
                     Expanded(
                       child: Wrap(
                         spacing: 4,
-                        children: bookmark.tags.take(3).map((tag) => Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Text(
-                            tag,
-                            style: const TextStyle(fontSize: 10),
-                          ),
-                        )).toList(),
+                        children: bookmark.tags
+                            .take(3)
+                            .map((tag) => Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 6, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[200],
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Text(
+                                    tag,
+                                    style: const TextStyle(fontSize: 10),
+                                  ),
+                                ))
+                            .toList(),
                       ),
                     ),
                   ],

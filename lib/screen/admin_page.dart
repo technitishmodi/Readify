@@ -12,7 +12,8 @@ class AdminPage extends StatefulWidget {
   State<AdminPage> createState() => _AdminPageState();
 }
 
-class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMixin {
+class _AdminPageState extends State<AdminPage>
+    with SingleTickerProviderStateMixin {
   final String _adminEmail = 'modinitish905@gmail.com';
   late TabController _tabController;
   final BookController _bookController = Get.find<BookController>();
@@ -165,7 +166,8 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
     );
   }
 
-  Widget _buildGlassCard(IconData icon, String title, String value, Color color) {
+  Widget _buildGlassCard(
+      IconData icon, String title, String value, Color color) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -292,7 +294,8 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
     );
   }
 
-  Widget _buildActivityCard(String title, String subtitle, IconData icon, Color color) {
+  Widget _buildActivityCard(
+      String title, String subtitle, IconData icon, Color color) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
@@ -335,7 +338,8 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
     );
   }
 
-  Widget _buildQuickActionCard(String title, IconData icon, Color color, VoidCallback onTap) {
+  Widget _buildQuickActionCard(
+      String title, IconData icon, Color color, VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -406,13 +410,13 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
         ),
         Expanded(
           child: Obx(() => ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            itemCount: _bookController.bookData.length,
-            itemBuilder: (context, index) {
-              final book = _bookController.bookData[index];
-              return _buildModernBookCard(book);
-            },
-          )),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                itemCount: _bookController.bookData.length,
+                itemBuilder: (context, index) {
+                  final book = _bookController.bookData[index];
+                  return _buildModernBookCard(book);
+                },
+              )),
         ),
       ],
     );
@@ -481,7 +485,8 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
                           color: const Color(0xFF3B82F6).withOpacity(0.1),
                           borderRadius: BorderRadius.circular(6),
@@ -499,7 +504,8 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
                       if (book.ratings != null)
                         Row(
                           children: [
-                            const Icon(Icons.star, color: Colors.amber, size: 16),
+                            const Icon(Icons.star,
+                                color: Colors.amber, size: 16),
                             const SizedBox(width: 4),
                             Text(
                               book.ratings!,
@@ -517,7 +523,8 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
                     future: _getBookUploaderEmail(book.id),
                     builder: (context, snapshot) {
                       return Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
                           color: const Color(0xFF10B981).withOpacity(0.1),
                           borderRadius: BorderRadius.circular(6),
@@ -525,7 +532,8 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.person, size: 12, color: Color(0xFF10B981)),
+                            const Icon(Icons.person,
+                                size: 12, color: Color(0xFF10B981)),
                             const SizedBox(width: 4),
                             Text(
                               'Uploaded by: ${snapshot.data ?? 'Loading...'}',
@@ -552,7 +560,8 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
                 ),
                 child: const Icon(Icons.more_vert, size: 18),
               ),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
               onSelected: (value) {
                 if (value == 'delete') {
                   _deleteBook(book);
@@ -567,7 +576,8 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
                   value: 'view',
                   child: Row(
                     children: [
-                      Icon(Icons.visibility, size: 18, color: Color(0xFF3B82F6)),
+                      Icon(Icons.visibility,
+                          size: 18, color: Color(0xFF3B82F6)),
                       SizedBox(width: 12),
                       Text('View Details'),
                     ],
@@ -603,28 +613,26 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
 
   Future<String> _getBookUploaderEmail(String? bookId) async {
     if (bookId == null) return 'Unknown';
-    
+
     try {
       // First check main books collection using uploaderId
-      final bookDoc = await FirebaseFirestore.instance
-          .collection('Book')
-          .doc(bookId)
-          .get();
-      
+      final bookDoc =
+          await FirebaseFirestore.instance.collection('Book').doc(bookId).get();
+
       if (bookDoc.exists) {
         final bookData = bookDoc.data();
         print('Book data for $bookId: $bookData'); // Debug log
-        
+
         final uploaderId = bookData?['uploaderId'];
         print('UploaderId: $uploaderId'); // Debug log
-        
+
         if (uploaderId != null && uploaderId.isNotEmpty) {
           // Get user details using uploaderId
           final userDoc = await FirebaseFirestore.instance
               .collection('users')
               .doc(uploaderId)
               .get();
-          
+
           print('User doc exists: ${userDoc.exists}'); // Debug log
           if (userDoc.exists) {
             final userData = userDoc.data();
@@ -635,14 +643,16 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
             }
           }
         }
-        
+
         // Try alternative field names that might be used
-        final directEmail = bookData?['uploaderEmail'] ?? bookData?['userEmail'] ?? bookData?['email'];
+        final directEmail = bookData?['uploaderEmail'] ??
+            bookData?['userEmail'] ??
+            bookData?['email'];
         if (directEmail != null && directEmail.isNotEmpty) {
           return directEmail;
         }
       }
-      
+
       return 'No uploader found';
     } catch (e) {
       print('Error fetching uploader email: $e');
@@ -688,7 +698,7 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               }
-              
+
               if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                 return const Center(
                   child: Text(
@@ -716,7 +726,7 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
 
   Widget _buildModernUserCard(Map<String, dynamic> userData, String userId) {
     final isAdmin = userData['email'] == 'modinitish905@gmail.com';
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -738,7 +748,7 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
             CircleAvatar(
               radius: 30,
               backgroundColor: const Color(0xFF3B82F6).withOpacity(0.1),
-              backgroundImage: userData['photoURL'] != null 
+              backgroundImage: userData['photoURL'] != null
                   ? NetworkImage(userData['photoURL'])
                   : null,
               child: userData['photoURL'] == null
@@ -770,7 +780,8 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
                       if (isAdmin) ...[
                         const SizedBox(width: 8),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
                             color: const Color(0xFFEF4444).withOpacity(0.1),
                             borderRadius: BorderRadius.circular(6),
@@ -799,7 +810,8 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
                           color: const Color(0xFF10B981).withOpacity(0.1),
                           borderRadius: BorderRadius.circular(6),
@@ -807,7 +819,8 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.access_time, size: 12, color: Color(0xFF10B981)),
+                            const Icon(Icons.access_time,
+                                size: 12, color: Color(0xFF10B981)),
                             const SizedBox(width: 4),
                             Text(
                               'Joined: ${_formatDate(userData['createdAt'])}',
@@ -835,7 +848,8 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
                   ),
                   child: const Icon(Icons.more_vert, size: 18),
                 ),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
                 onSelected: (value) {
                   if (value == 'view') {
                     _viewUserDetails(userData, userId);
@@ -850,7 +864,8 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
                     value: 'view',
                     child: Row(
                       children: [
-                        Icon(Icons.visibility, size: 18, color: Color(0xFF3B82F6)),
+                        Icon(Icons.visibility,
+                            size: 18, color: Color(0xFF3B82F6)),
                         SizedBox(width: 12),
                         Text('View Profile'),
                       ],
@@ -886,7 +901,7 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
 
   String _formatDate(dynamic timestamp) {
     if (timestamp == null) return 'Unknown';
-    
+
     try {
       DateTime date;
       if (timestamp is Timestamp) {
@@ -896,7 +911,7 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
       } else {
         return 'Unknown';
       }
-      
+
       return '${date.day}/${date.month}/${date.year}';
     } catch (e) {
       return 'Unknown';
@@ -1043,9 +1058,12 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
                     const SizedBox(width: 16),
                     Expanded(
                       child: StreamBuilder<QuerySnapshot>(
-                        stream: FirebaseFirestore.instance.collection('users').snapshots(),
+                        stream: FirebaseFirestore.instance
+                            .collection('users')
+                            .snapshots(),
                         builder: (context, snapshot) {
-                          final userCount = snapshot.hasData ? snapshot.data!.docs.length : 0;
+                          final userCount =
+                              snapshot.hasData ? snapshot.data!.docs.length : 0;
                           return _buildAnalyticsCard(
                             'Total Users',
                             '$userCount',
@@ -1067,7 +1085,8 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
                             .where('isOnline', isEqualTo: true)
                             .snapshots(),
                         builder: (context, snapshot) {
-                          final onlineCount = snapshot.hasData ? snapshot.data!.docs.length : 0;
+                          final onlineCount =
+                              snapshot.hasData ? snapshot.data!.docs.length : 0;
                           return GestureDetector(
                             onTap: () => _showOnlineUsers(),
                             child: _buildAnalyticsCard(
@@ -1085,9 +1104,13 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
                       child: GestureDetector(
                         onTap: () => _showAllUsers(),
                         child: StreamBuilder<QuerySnapshot>(
-                          stream: FirebaseFirestore.instance.collection('users').snapshots(),
+                          stream: FirebaseFirestore.instance
+                              .collection('users')
+                              .snapshots(),
                           builder: (context, snapshot) {
-                            final userCount = snapshot.hasData ? snapshot.data!.docs.length : 0;
+                            final userCount = snapshot.hasData
+                                ? snapshot.data!.docs.length
+                                : 0;
                             return _buildAnalyticsCard(
                               'All Registered',
                               '$userCount',
@@ -1105,9 +1128,12 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
                   children: [
                     Expanded(
                       child: StreamBuilder<QuerySnapshot>(
-                        stream: FirebaseFirestore.instance.collection('bookRequests').snapshots(),
+                        stream: FirebaseFirestore.instance
+                            .collection('bookRequests')
+                            .snapshots(),
                         builder: (context, snapshot) {
-                          final requestCount = snapshot.hasData ? snapshot.data!.docs.length : 0;
+                          final requestCount =
+                              snapshot.hasData ? snapshot.data!.docs.length : 0;
                           return _buildAnalyticsCard(
                             'Book Requests',
                             '$requestCount',
@@ -1146,7 +1172,8 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: Colors.grey.withOpacity(0.1)),
+                          border:
+                              Border.all(color: Colors.grey.withOpacity(0.1)),
                         ),
                         child: const Text(
                           'More analytics coming soon...',
@@ -1171,7 +1198,8 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
     );
   }
 
-  Widget _buildAnalyticsCard(String title, String value, IconData icon, Color color) {
+  Widget _buildAnalyticsCard(
+      String title, String value, IconData icon, Color color) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -1250,12 +1278,24 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
           const SizedBox(height: 16),
           ...List.generate(3, (index) {
             final activities = [
-              {'action': 'New book uploaded', 'time': '2 hours ago', 'icon': Icons.upload_file},
-              {'action': 'User registered', 'time': '5 hours ago', 'icon': Icons.person_add},
-              {'action': 'Book deleted', 'time': '1 day ago', 'icon': Icons.delete},
+              {
+                'action': 'New book uploaded',
+                'time': '2 hours ago',
+                'icon': Icons.upload_file
+              },
+              {
+                'action': 'User registered',
+                'time': '5 hours ago',
+                'icon': Icons.person_add
+              },
+              {
+                'action': 'Book deleted',
+                'time': '1 day ago',
+                'icon': Icons.delete
+              },
             ];
             final activity = activities[index];
-            
+
             return Padding(
               padding: const EdgeInsets.only(bottom: 12),
               child: Row(
@@ -1340,8 +1380,9 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
           else
             ...categoryCount.entries.map((entry) {
               final total = _bookController.bookData.length;
-              final percentage = total > 0 ? (entry.value / total * 100).round() : 0;
-              
+              final percentage =
+                  total > 0 ? (entry.value / total * 100).round() : 0;
+
               return Padding(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: Column(
@@ -1370,7 +1411,8 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
                     LinearProgressIndicator(
                       value: total > 0 ? entry.value / total : 0,
                       backgroundColor: Colors.grey[200],
-                      valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF3B82F6)),
+                      valueColor: const AlwaysStoppedAnimation<Color>(
+                          Color(0xFF3B82F6)),
                     ),
                   ],
                 ),
@@ -1383,31 +1425,33 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
 
   String _getMostPopularCategory() {
     if (_bookController.bookData.isEmpty) return 'N/A';
-    
+
     final categoryCount = <String, int>{};
     for (final book in _bookController.bookData) {
       final category = book.category ?? 'Uncategorized';
       categoryCount[category] = (categoryCount[category] ?? 0) + 1;
     }
-    
+
     if (categoryCount.isEmpty) return 'N/A';
-    
-    final mostPopular = categoryCount.entries.reduce((a, b) => a.value > b.value ? a : b);
+
+    final mostPopular =
+        categoryCount.entries.reduce((a, b) => a.value > b.value ? a : b);
     return mostPopular.key;
   }
 
   String _getAverageRating() {
     if (_bookController.bookData.isEmpty) return 'N/A';
-    
+
     final ratingsWithValues = _bookController.bookData
         .where((book) => book.ratings != null && book.ratings!.isNotEmpty)
         .map((book) => double.tryParse(book.ratings!) ?? 0)
         .where((rating) => rating > 0)
         .toList();
-    
+
     if (ratingsWithValues.isEmpty) return 'N/A';
-    
-    final average = ratingsWithValues.reduce((a, b) => a + b) / ratingsWithValues.length;
+
+    final average =
+        ratingsWithValues.reduce((a, b) => a + b) / ratingsWithValues.length;
     return average.toStringAsFixed(1);
   }
 
@@ -1626,12 +1670,14 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
               _buildDetailRow('Author', book.auther ?? 'N/A'),
               _buildDetailRow('Category', book.category ?? 'N/A'),
               _buildDetailRow('Rating', book.ratings ?? 'N/A'),
-              _buildDetailRow('Description', book.descriptions ?? 'No description available'),
+              _buildDetailRow('Description',
+                  book.descriptions ?? 'No description available'),
               const SizedBox(height: 8),
               FutureBuilder<String>(
                 future: _getBookUploaderEmail(book.id),
                 builder: (context, snapshot) {
-                  return _buildDetailRow('Uploaded by', snapshot.data ?? 'Loading...');
+                  return _buildDetailRow(
+                      'Uploaded by', snapshot.data ?? 'Loading...');
                 },
               ),
             ],
@@ -1695,7 +1741,7 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               }
-              
+
               if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                 return const Center(
                   child: Text(
@@ -1708,9 +1754,10 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
               return ListView.builder(
                 itemCount: snapshot.data!.docs.length,
                 itemBuilder: (context, index) {
-                  final requestData = snapshot.data!.docs[index].data() as Map<String, dynamic>;
+                  final requestData =
+                      snapshot.data!.docs[index].data() as Map<String, dynamic>;
                   final requestId = snapshot.data!.docs[index].id;
-                  
+
                   return Container(
                     margin: const EdgeInsets.only(bottom: 12),
                     padding: const EdgeInsets.all(16),
@@ -1734,7 +1781,8 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
                               ),
                             ),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
                                 color: const Color(0xFFEF4444).withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(6),
@@ -1771,13 +1819,15 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             TextButton(
-                              onPressed: () => _markRequestAsCompleted(requestId),
+                              onPressed: () =>
+                                  _markRequestAsCompleted(requestId),
                               child: const Text('Mark Complete'),
                             ),
                             const SizedBox(width: 8),
                             TextButton(
                               onPressed: () => _deleteRequest(requestId),
-                              style: TextButton.styleFrom(foregroundColor: Colors.red),
+                              style: TextButton.styleFrom(
+                                  foregroundColor: Colors.red),
                               child: const Text('Delete'),
                             ),
                           ],
@@ -1802,7 +1852,7 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
 
   String _formatRequestDate(dynamic timestamp) {
     if (timestamp == null) return 'Unknown';
-    
+
     try {
       DateTime date;
       if (timestamp is Timestamp) {
@@ -1812,7 +1862,7 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
       } else {
         return 'Unknown';
       }
-      
+
       return '${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
     } catch (e) {
       return 'Unknown';
@@ -1825,7 +1875,7 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
           .collection('bookRequests')
           .doc(requestId)
           .update({'status': 'Completed'});
-      
+
       Get.snackbar(
         'Success',
         'Request marked as completed',
@@ -1850,7 +1900,7 @@ class _AdminPageState extends State<AdminPage> with SingleTickerProviderStateMix
           .collection('bookRequests')
           .doc(requestId)
           .delete();
-      
+
       Get.snackbar(
         'Success',
         'Request deleted',

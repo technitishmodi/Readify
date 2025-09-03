@@ -41,7 +41,8 @@ class Bookmodel {
     this.uploaderId,
   });
 
-  Bookmodel.fromJson(Map<String, dynamic> json) : visibility = json["visibility"] ?? 'public' {
+  Bookmodel.fromJson(Map<String, dynamic> json)
+      : visibility = json["visibility"] ?? 'public' {
     id = json["id"];
     title = json["title"];
     descriptions = json["descriptions"];
@@ -90,6 +91,7 @@ class Bookmodel {
     return _data;
   }
 }
+
 // thought_post.dart
 class ThoughtPost {
   final String id;
@@ -101,7 +103,8 @@ class ThoughtPost {
   final int likes;
   final List<String> likedBy;
 
-  ThoughtPost(this.likedBy, {
+  ThoughtPost(
+    this.likedBy, {
     required this.id,
     required this.userId,
     required this.userName,
@@ -113,27 +116,28 @@ class ThoughtPost {
   });
 
   factory ThoughtPost.fromJson(Map<String, dynamic> json) => ThoughtPost(
-    List<String>.from(json['likedBy'] ?? []), // Pass likedBy as the first positional argument
-    id: json['id'],
-    userId: json['userId'],
-    userName: json['userName'],
-    userPhoto: json['userPhoto'],
-    content: json['content'],
-    timestamp: (json['timestamp'] as Timestamp).toDate(),
-    likes: json['likes'] ?? 0,
-    // Removed duplicate initialization of likedBy
-  );
+        List<String>.from(json['likedBy'] ??
+            []), // Pass likedBy as the first positional argument
+        id: json['id'],
+        userId: json['userId'],
+        userName: json['userName'],
+        userPhoto: json['userPhoto'],
+        content: json['content'],
+        timestamp: (json['timestamp'] as Timestamp).toDate(),
+        likes: json['likes'] ?? 0,
+        // Removed duplicate initialization of likedBy
+      );
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'userId': userId,
-    'userName': userName,
-    'userPhoto': userPhoto,
-    'content': content,
-    'timestamp': timestamp,
-    'likes': likes,
-    'likedBy': likedBy,
-  };
+        'id': id,
+        'userId': userId,
+        'userName': userName,
+        'userPhoto': userPhoto,
+        'content': content,
+        'timestamp': timestamp,
+        'likes': likes,
+        'likedBy': likedBy,
+      };
 }
 
 // book_request.dart
@@ -155,20 +159,20 @@ class BookRequest {
   });
 
   factory BookRequest.fromJson(Map<String, dynamic> json) => BookRequest(
-    id: json['id'],
-    userId: json['userId'],
-    userName: json['userName'],
-    bookTitle: json['bookTitle'],
-    timestamp: (json['timestamp'] as Timestamp).toDate(),
-    status: json['status'] ?? 'Pending',
-  );
+        id: json['id'],
+        userId: json['userId'],
+        userName: json['userName'],
+        bookTitle: json['bookTitle'],
+        timestamp: (json['timestamp'] as Timestamp).toDate(),
+        status: json['status'] ?? 'Pending',
+      );
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'userId': userId,
-    'userName': userName,
-    'bookTitle': bookTitle,
-    'timestamp': timestamp,
-    'status': status,
-  };
+        'id': id,
+        'userId': userId,
+        'userName': userName,
+        'bookTitle': bookTitle,
+        'timestamp': timestamp,
+        'status': status,
+      };
 }

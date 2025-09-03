@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ReadingGoalsController extends GetxController {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  
+
   // Observable variables
   final RxList<ReadingGoal> goals = <ReadingGoal>[].obs;
   final RxBool isLoading = false.obs;
@@ -126,7 +126,8 @@ class ReadingGoalsController extends GetxController {
     goals.value = defaultGoals;
   }
 
-  Future<void> updateGoal(String goalId, {
+  Future<void> updateGoal(
+    String goalId, {
     double? targetValue,
     double? currentValue,
     bool? isActive,
@@ -192,16 +193,17 @@ class ReadingGoalsController extends GetxController {
       if (user == null) return;
 
       final now = DateTime.now();
-      
+
       // Calculate today's reading time
       final todayStart = DateTime(now.year, now.month, now.day);
       final todayEnd = todayStart.add(const Duration(days: 1));
-      
+
       final todaySessions = await _db
           .collection('UserProgress')
           .doc(user.uid)
           .collection('ReadingSessions')
-          .where('startTime', isGreaterThanOrEqualTo: todayStart.toIso8601String())
+          .where('startTime',
+              isGreaterThanOrEqualTo: todayStart.toIso8601String())
           .where('startTime', isLessThan: todayEnd.toIso8601String())
           .get();
 
@@ -211,58 +213,68 @@ class ReadingGoalsController extends GetxController {
         todayMinutes += duration.toDouble();
       }
 
-      todayProgress.value = (todayMinutes / dailyGoalMinutes.value).clamp(0.0, 1.0);
+      todayProgress.value =
+          (todayMinutes / dailyGoalMinutes.value).clamp(0.0, 1.0);
 
       // Calculate weekly progress
       final weekStart = now.subtract(Duration(days: now.weekday - 1));
       final weekEnd = weekStart.add(const Duration(days: 7));
-      
+
       final weeklyBooks = await _db
           .collection('UserProgress')
           .doc(user.uid)
           .collection('BookProgress')
-          .where('lastReadDate', isGreaterThanOrEqualTo: weekStart.toIso8601String())
+          .where('lastReadDate',
+              isGreaterThanOrEqualTo: weekStart.toIso8601String())
           .where('lastReadDate', isLessThan: weekEnd.toIso8601String())
           .where('isCompleted', isEqualTo: true)
           .get();
 
-      weekProgress.value = (weeklyBooks.docs.length / weeklyGoalBooks.value).clamp(0.0, 1.0);
+      weekProgress.value =
+          (weeklyBooks.docs.length / weeklyGoalBooks.value).clamp(0.0, 1.0);
 
       // Calculate monthly progress
       final monthStart = DateTime(now.year, now.month, 1);
       final monthEnd = DateTime(now.year, now.month + 1, 1);
-      
+
       final monthlyBooks = await _db
           .collection('UserProgress')
           .doc(user.uid)
           .collection('BookProgress')
-          .where('lastReadDate', isGreaterThanOrEqualTo: monthStart.toIso8601String())
+          .where('lastReadDate',
+              isGreaterThanOrEqualTo: monthStart.toIso8601String())
           .where('lastReadDate', isLessThan: monthEnd.toIso8601String())
           .where('isCompleted', isEqualTo: true)
           .get();
 
-      monthProgress.value = (monthlyBooks.docs.length / monthlyGoalBooks.value).clamp(0.0, 1.0);
+      monthProgress.value =
+          (monthlyBooks.docs.length / monthlyGoalBooks.value).clamp(0.0, 1.0);
 
       // Calculate yearly progress
       final yearStart = DateTime(now.year, 1, 1);
       final yearEnd = DateTime(now.year + 1, 1, 1);
-      
+
       final yearlyBooks = await _db
           .collection('UserProgress')
           .doc(user.uid)
           .collection('BookProgress')
-          .where('lastReadDate', isGreaterThanOrEqualTo: yearStart.toIso8601String())
+          .where('lastReadDate',
+              isGreaterThanOrEqualTo: yearStart.toIso8601String())
           .where('lastReadDate', isLessThan: yearEnd.toIso8601String())
           .where('isCompleted', isEqualTo: true)
           .get();
 
-      yearProgress.value = (yearlyBooks.docs.length / yearlyGoalBooks.value).clamp(0.0, 1.0);
+      yearProgress.value =
+          (yearlyBooks.docs.length / yearlyGoalBooks.value).clamp(0.0, 1.0);
 
       // Update goal current values
       await updateGoal('daily_reading', currentValue: todayMinutes);
-      await updateGoal('weekly_books', currentValue: weeklyBooks.docs.length.toDouble());
-      await updateGoal('monthly_books', currentValue: monthlyBooks.docs.length.toDouble());
-      await updateGoal('yearly_books', currentValue: yearlyBooks.docs.length.toDouble());
+      await updateGoal('weekly_books',
+          currentValue: weeklyBooks.docs.length.toDouble());
+      await updateGoal('monthly_books',
+          currentValue: monthlyBooks.docs.length.toDouble());
+      await updateGoal('yearly_books',
+          currentValue: yearlyBooks.docs.length.toDouble());
     } catch (e) {
       print('Error calculating progress: $e');
     }
@@ -334,35 +346,38 @@ class ReadingGoal {
     );
   }
 
-  double get progressPercent => targetValue > 0 ? (currentValue / targetValue).clamp(0.0, 1.0) : 0.0;
+  double get progressPercent =>
+      targetValue > 0 ? (currentValue / targetValue).clamp(0.0, 1.0) : 0.0;
   bool get isCompleted => currentValue >= targetValue;
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'title': title,
-    'description': description,
-    'targetValue': targetValue,
-    'currentValue': currentValue,
-    'goalType': goalType.toString(),
-    'unit': unit,
-    'isActive': isActive,
-    'createdAt': createdAt.toIso8601String(),
-    'completedAt': completedAt?.toIso8601String(),
-  };
+        'id': id,
+        'title': title,
+        'description': description,
+        'targetValue': targetValue,
+        'currentValue': currentValue,
+        'goalType': goalType.toString(),
+        'unit': unit,
+        'isActive': isActive,
+        'createdAt': createdAt.toIso8601String(),
+        'completedAt': completedAt?.toIso8601String(),
+      };
 
   factory ReadingGoal.fromJson(Map<String, dynamic> json) => ReadingGoal(
-    id: json['id'] ?? '',
-    title: json['title'] ?? '',
-    description: json['description'] ?? '',
-    targetValue: (json['targetValue'] ?? 0).toDouble(),
-    currentValue: (json['currentValue'] ?? 0).toDouble(),
-    goalType: GoalType.values.firstWhere(
-      (e) => e.toString() == json['goalType'],
-      orElse: () => GoalType.daily,
-    ),
-    unit: json['unit'] ?? '',
-    isActive: json['isActive'] ?? true,
-    createdAt: DateTime.parse(json['createdAt']),
-    completedAt: json['completedAt'] != null ? DateTime.parse(json['completedAt']) : null,
-  );
+        id: json['id'] ?? '',
+        title: json['title'] ?? '',
+        description: json['description'] ?? '',
+        targetValue: (json['targetValue'] ?? 0).toDouble(),
+        currentValue: (json['currentValue'] ?? 0).toDouble(),
+        goalType: GoalType.values.firstWhere(
+          (e) => e.toString() == json['goalType'],
+          orElse: () => GoalType.daily,
+        ),
+        unit: json['unit'] ?? '',
+        isActive: json['isActive'] ?? true,
+        createdAt: DateTime.parse(json['createdAt']),
+        completedAt: json['completedAt'] != null
+            ? DateTime.parse(json['completedAt'])
+            : null,
+      );
 }

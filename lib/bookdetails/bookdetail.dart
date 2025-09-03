@@ -13,6 +13,8 @@ import 'package:share_plus/share_plus.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
+final _auth = FirebaseAuth.instance;
+
 class Bookdetail extends StatefulWidget {
   final String coverUrl;
   final String imageUrl;
@@ -45,38 +47,33 @@ class Bookdetail extends StatefulWidget {
   State<Bookdetail> createState() => _BookdetailState();
 }
 
-class _BookdetailState extends State<Bookdetail>
-    with TickerProviderStateMixin {
+class _BookdetailState extends State<Bookdetail> with TickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
-  
+
   final BookmarkController bookmarkController = Get.put(BookmarkController());
 
   @override
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 800),
       vsync: this,
+      duration: const Duration(milliseconds: 800),
     );
-    
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
-    
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeInOut,
+      ),
+    );
     _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.3),
+      begin: const Offset(0, 0.1),
       end: Offset.zero,
     ).animate(CurvedAnimation(
       parent: _animationController,
-      curve: Curves.easeOutCubic,
+      curve: Curves.easeOutQuart,
     ));
-    
     _animationController.forward();
   }
 
@@ -110,15 +107,17 @@ class _BookdetailState extends State<Bookdetail>
             tooltip: 'Share Book',
           ),
           Obx(() {
-            final isBookmarked = widget.bookId != null 
-                ? bookmarkController.isBookmarked(widget.bookId!) 
+            final isBookmarked = widget.bookId != null
+                ? bookmarkController.isBookmarked(widget.bookId!)
                 : false;
-            
+
             return IconButton(
               icon: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 300),
                 child: Icon(
-                  isBookmarked ? Icons.bookmark : Icons.bookmark_border_outlined,
+                  isBookmarked
+                      ? Icons.bookmark
+                      : Icons.bookmark_border_outlined,
                   color: isBookmarked ? Colors.amber : Colors.white,
                   key: ValueKey(isBookmarked),
                 ),
@@ -146,13 +145,12 @@ class _BookdetailState extends State<Bookdetail>
               ).createShader(rect),
               blendMode: BlendMode.darken,
               child: Image.network(
-  widget.imageUrl,
-  fit: BoxFit.contain, // keeps full image visible
-  alignment: Alignment.topCenter,
-  errorBuilder: (_, __, ___) =>
-      Container(color: colorScheme.surfaceContainerHighest),
-),
-
+                widget.imageUrl,
+                fit: BoxFit.contain, // keeps full image visible
+                alignment: Alignment.topCenter,
+                errorBuilder: (_, __, ___) =>
+                    Container(color: colorScheme.surfaceContainerHighest),
+              ),
             ),
           ),
 
@@ -163,14 +161,16 @@ class _BookdetailState extends State<Bookdetail>
             maxChildSize: 0.95,
             builder: (context, controller) {
               return ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(36)),
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(36)),
                 child: BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
                   child: Container(
                     decoration: BoxDecoration(
                       color: colorScheme.surface.withOpacity(0.8),
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 12),
                     child: FadeTransition(
                       opacity: _fadeAnimation,
                       child: SlideTransition(
@@ -201,7 +201,8 @@ class _BookdetailState extends State<Bookdetail>
                                   borderRadius: BorderRadius.circular(20),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: colorScheme.primary.withOpacity(0.6),
+                                      color:
+                                          colorScheme.primary.withOpacity(0.6),
                                       blurRadius: 30,
                                       spreadRadius: 5,
                                     ),
@@ -212,10 +213,11 @@ class _BookdetailState extends State<Bookdetail>
                                   child: Hero(
                                     tag: widget.title,
                                     child: Image.network(
-                                      widget.imageUrl, 
+                                      widget.imageUrl,
                                       fit: BoxFit.contain,
                                       errorBuilder: (_, __, ___) => Container(
-                                        color: colorScheme.surfaceContainerHighest,
+                                        color:
+                                            colorScheme.surfaceContainerHighest,
                                         child: const Icon(Icons.book, size: 50),
                                       ),
                                     ),
@@ -231,7 +233,8 @@ class _BookdetailState extends State<Bookdetail>
                                   Text(
                                     widget.title,
                                     textAlign: TextAlign.center,
-                                    style: theme.textTheme.headlineSmall?.copyWith(
+                                    style:
+                                        theme.textTheme.headlineSmall?.copyWith(
                                       fontWeight: FontWeight.bold,
                                       color: colorScheme.onSurface,
                                     ),
@@ -239,7 +242,8 @@ class _BookdetailState extends State<Bookdetail>
                                   const SizedBox(height: 6),
                                   Text(
                                     "by ${widget.author}",
-                                    style: theme.textTheme.titleMedium?.copyWith(
+                                    style:
+                                        theme.textTheme.titleMedium?.copyWith(
                                       color: colorScheme.onSurfaceVariant,
                                     ),
                                   ),
@@ -253,9 +257,12 @@ class _BookdetailState extends State<Bookdetail>
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                _statCard(Icons.star, "${widget.rating.toStringAsFixed(1)}"),
-                                _statCard(Icons.people, "${(widget.readCount / 1000).toStringAsFixed(1)}k"),
-                                _statCard(Icons.menu_book, "${widget.pageCount} pages"),
+                                _statCard(Icons.star,
+                                    "${widget.rating.toStringAsFixed(1)}"),
+                                _statCard(Icons.people,
+                                    "${(widget.readCount / 1000).toStringAsFixed(1)}k"),
+                                _statCard(Icons.menu_book,
+                                    "${widget.pageCount} pages"),
                               ],
                             ),
 
@@ -274,7 +281,8 @@ class _BookdetailState extends State<Bookdetail>
                             const SizedBox(height: 28),
 
                             /// About Author
-                            _sectionTitle("About the Author", theme, colorScheme),
+                            _sectionTitle(
+                                "About the Author", theme, colorScheme),
                             Text(
                               widget.aboutAuthor,
                               style: theme.textTheme.bodyLarge?.copyWith(
@@ -282,7 +290,6 @@ class _BookdetailState extends State<Bookdetail>
                                 height: 1.6,
                               ),
                             ),
-                            const SizedBox(height: 120),
                           ],
                         ),
                       ),
@@ -304,11 +311,11 @@ class _BookdetailState extends State<Bookdetail>
           children: [
             FloatingActionButton.extended(
               onPressed: () => Get.to(() => ListeningScreen(
-                pdfUrl: widget.coverUrl,
-                bookTitle: widget.title,
-                author: widget.author,
-                coverImageUrl: widget.imageUrl,
-              )),
+                    pdfUrl: widget.coverUrl,
+                    bookTitle: widget.title,
+                    author: widget.author,
+                    coverImageUrl: widget.imageUrl,
+                  )),
               backgroundColor: colorScheme.secondary,
               heroTag: "listen",
               icon: const Icon(Icons.headphones, size: 24),
@@ -316,10 +323,10 @@ class _BookdetailState extends State<Bookdetail>
             ),
             FloatingActionButton.extended(
               onPressed: () => Get.to(() => Boopageread(
-                pdfUrl: widget.coverUrl,
-                bookId: widget.bookId ?? '',
-                bookTitle: widget.title,
-              )),
+                    pdfUrl: widget.coverUrl,
+                    bookId: widget.bookId ?? '',
+                    bookTitle: widget.title,
+                  )),
               backgroundColor: colorScheme.primary,
               heroTag: "read",
               icon: const Icon(Icons.menu_book_outlined, size: 26),
@@ -338,7 +345,10 @@ class _BookdetailState extends State<Bookdetail>
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         gradient: LinearGradient(
-          colors: [Colors.purple.withOpacity(0.6), Colors.blue.withOpacity(0.6)],
+          colors: [
+            Colors.purple.withOpacity(0.6),
+            Colors.blue.withOpacity(0.6)
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -386,7 +396,7 @@ class _BookdetailState extends State<Bookdetail>
       final bookAuthor = widget.author;
       final bookUrl = widget.coverUrl;
       final imageUrl = widget.imageUrl;
-      
+
       // Show sharing options dialog
       Get.dialog(
         AlertDialog(
@@ -401,7 +411,10 @@ class _BookdetailState extends State<Bookdetail>
                   subtitle: const Text('Download and share the actual PDF'),
                   onTap: () async {
                     Get.back();
-                    await _shareFile(bookUrl, '${bookTitle.replaceAll(' ', '_')}.pdf', 'application/pdf');
+                    await _shareFile(
+                        bookUrl,
+                        '${bookTitle.replaceAll(' ', '_')}.pdf',
+                        'application/pdf');
                   },
                 ),
               if (imageUrl.isNotEmpty)
@@ -411,7 +424,10 @@ class _BookdetailState extends State<Bookdetail>
                   subtitle: const Text('Download and share the book cover'),
                   onTap: () async {
                     Get.back();
-                    await _shareFile(imageUrl, '${bookTitle.replaceAll(' ', '_')}_cover.jpg', 'image/jpeg');
+                    await _shareFile(
+                        imageUrl,
+                        '${bookTitle.replaceAll(' ', '_')}_cover.jpg',
+                        'image/jpeg');
                   },
                 ),
               ListTile(
@@ -465,18 +481,17 @@ class _BookdetailState extends State<Bookdetail>
       // Get temporary directory
       final tempDir = await getTemporaryDirectory();
       final file = File('${tempDir.path}/$fileName');
-      
+
       // Write file
       await file.writeAsBytes(response.bodyBytes);
-      
+
       Get.back(); // Close loading dialog
-      
+
       // Share the file
       await Share.shareXFiles(
         [XFile(file.path, mimeType: mimeType)],
         text: 'Shared from Readify app',
       );
-      
     } catch (e) {
       Get.back(); // Close loading dialog if open
       _showSnackBar('Failed to share file: ${e.toString()}');
@@ -484,12 +499,7 @@ class _BookdetailState extends State<Bookdetail>
   }
 
   void _handleBookmark() async {
-    if (widget.bookId == null) {
-      _showSnackBar("Book ID not available for bookmarking");
-      return;
-    }
-
-    final user = FirebaseAuth.instance.currentUser;
+    final user = _auth.currentUser;
     if (user == null) {
       _showSnackBar("Please sign in to bookmark books");
       return;
@@ -506,19 +516,19 @@ class _BookdetailState extends State<Bookdetail>
       bookUrl: widget.coverUrl,
       ratings: widget.rating.toString(),
       category: widget.category,
-      visibility: 'public', // Add required visibility parameter
+      visibility: 'public',
     );
 
     await bookmarkController.toggleBookmark(book);
-    
+
     // Navigate to profile page after bookmarking
     if (bookmarkController.isBookmarked(widget.bookId!)) {
       await Future.delayed(const Duration(milliseconds: 500));
       Get.to(() => Profilepage(
-        userName: user.displayName ?? 'User',
-        userEmail: user.email ?? '',
-        userPhoto: user.photoURL,
-      ));
+            userName: user.displayName ?? 'User',
+            userEmail: user.email ?? '',
+            userPhoto: user.photoURL,
+          ));
     }
   }
 

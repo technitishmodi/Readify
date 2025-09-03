@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 
 class TtsController extends GetxController {
   FlutterTts? flutterTts;
-  
+
   // Observable variables
   var isPlaying = false.obs;
   var isPaused = false.obs;
@@ -32,15 +32,14 @@ class TtsController extends GetxController {
   Future<void> _initTts() async {
     try {
       flutterTts = FlutterTts();
-      
+
       // Check if TTS is available on the device
       bool isAvailable = await _checkTtsAvailability();
       if (!isAvailable) {
-        print("TTS not available on this device");
         isInitialized.value = false;
         return;
       }
-      
+
       // Set basic handlers
       flutterTts!.setStartHandler(() {
         isPlaying.value = true;
@@ -59,7 +58,6 @@ class TtsController extends GetxController {
             isPlayingChunks.value = false;
             isPlaying.value = false;
             isPaused.value = false;
-            print("TTS: All chunks completed");
           }
         } else {
           // Normal single text completion
@@ -69,11 +67,10 @@ class TtsController extends GetxController {
       });
 
       flutterTts!.setErrorHandler((msg) {
-        print("TTS Error: $msg");
         isPlaying.value = false;
         isPaused.value = false;
         isPlayingChunks.value = false;
-        
+
         // Show user-friendly message for common errors
         if (msg.contains("-8") || msg.contains("speak")) {
           Get.snackbar(
@@ -94,11 +91,9 @@ class TtsController extends GetxController {
       await flutterTts!.setPitch(1.0);
 
       isInitialized.value = true;
-      print("TTS initialized successfully");
     } catch (e) {
-      print("TTS initialization error: $e");
       isInitialized.value = false;
-      
+
       Get.snackbar(
         "TTS Error",
         "Text-to-speech initialization failed. Feature unavailable.",
@@ -114,27 +109,18 @@ class TtsController extends GetxController {
       var languages = await flutterTts!.getLanguages;
       return languages != null && languages.isNotEmpty;
     } catch (e) {
-      print("TTS availability check failed: $e");
       return false;
     }
   }
 
   Future<void> speak(String text) async {
-    print("=== TTS DEBUG: speak() called ===");
-    print("Text length: ${text.length}");
-    print("Text preview: ${text.substring(0, text.length > 200 ? 200 : text.length)}");
-    print("Text is empty: ${text.trim().isEmpty}");
-    
     if (text.trim().isEmpty) {
-      print("TTS: Skipping empty text");
       return;
     }
-    
+
     if (flutterTts == null || !isInitialized.value) {
-      print("TTS: Initializing TTS...");
       await _initTts();
       if (!isInitialized.value) {
-        print("TTS: Initialization failed");
         Get.snackbar(
           "TTS Unavailable",
           "Text-to-speech is not supported on this device",
@@ -146,30 +132,23 @@ class TtsController extends GetxController {
     }
 
     try {
-      print("TTS: Stopping current speech...");
       await flutterTts!.stop();
       await Future.delayed(Duration(milliseconds: 200));
-      
+
       currentText.value = text;
-      
+
       // Check if text is too long for single TTS call
       if (text.length > 4000) {
-        print("TTS: Text too long (${text.length} chars), splitting into chunks");
         currentSpeakingText.value = text;
-        print("TTS: Set currentSpeakingText to ${text.length} characters");
         await _speakInChunks(text);
       } else {
-        print("TTS: Starting to speak text...");
         currentSpeakingText.value = text;
-        print("TTS: Set currentSpeakingText to ${text.length} characters");
         await flutterTts!.speak(text);
-        print("TTS: Speak command sent successfully");
       }
     } catch (e) {
-      print("TTS: Speak error: $e");
       isPlaying.value = false;
       isPaused.value = false;
-      
+
       Get.snackbar(
         "TTS Error",
         "Unable to speak this text. Please try again.",
@@ -184,9 +163,7 @@ class TtsController extends GetxController {
     textChunks.value = _splitTextIntoChunks(text, 3000);
     currentChunkIndex.value = 0;
     isPlayingChunks.value = true;
-    
-    print("TTS: Split into ${textChunks.length} chunks");
-    
+
     // Start speaking the first chunk
     await _speakNextChunk();
   }
@@ -194,14 +171,11 @@ class TtsController extends GetxController {
   Future<void> _speakNextChunk() async {
     if (currentChunkIndex.value < textChunks.length && isPlayingChunks.value) {
       String chunk = textChunks[currentChunkIndex.value];
-      print("TTS: Speaking chunk ${currentChunkIndex.value + 1}/${textChunks.length} (${chunk.length} chars)");
       currentSpeakingText.value = chunk;
-      print("TTS: Updated currentSpeakingText with chunk ${currentChunkIndex.value + 1} (${chunk.length} chars)");
-      
+
       try {
         await flutterTts!.speak(chunk);
       } catch (e) {
-        print("TTS: Chunk speak error: $e");
         isPlayingChunks.value = false;
         isPlaying.value = false;
         currentSpeakingText.value = '';
@@ -212,9 +186,9 @@ class TtsController extends GetxController {
   List<String> _splitTextIntoChunks(String text, int maxChunkSize) {
     List<String> chunks = [];
     List<String> sentences = text.split(RegExp(r'[.!?]+\s+'));
-    
+
     String currentChunk = '';
-    
+
     for (String sentence in sentences) {
       if (currentChunk.length + sentence.length + 1 <= maxChunkSize) {
         currentChunk += (currentChunk.isEmpty ? '' : '. ') + sentence;
@@ -242,11 +216,11 @@ class TtsController extends GetxController {
         }
       }
     }
-    
+
     if (currentChunk.isNotEmpty) {
       chunks.add(currentChunk.trim());
     }
-    
+
     return chunks;
   }
 
@@ -255,9 +229,7 @@ class TtsController extends GetxController {
       if (flutterTts != null) {
         await flutterTts!.pause();
       }
-    } catch (e) {
-      print('Pause error: $e');
-    }
+    } catch (e) {}
   }
 
   Future<void> resume() async {
@@ -265,9 +237,7 @@ class TtsController extends GetxController {
       if (flutterTts != null && isPaused.value) {
         await flutterTts!.speak(currentText.value);
       }
-    } catch (e) {
-      print('Resume error: $e');
-    }
+    } catch (e) {}
   }
 
   Future<void> stop() async {
@@ -279,10 +249,7 @@ class TtsController extends GetxController {
       isPaused.value = false;
       isPlayingChunks.value = false;
       currentSpeakingText.value = '';
-      print("TTS: Stopped and cleared speaking text");
-    } catch (e) {
-      print('Stop error: $e');
-    }
+    } catch (e) {}
   }
 
   Future<void> setSpeechRate(double rate) async {
@@ -291,9 +258,7 @@ class TtsController extends GetxController {
       if (flutterTts != null) {
         await flutterTts!.setSpeechRate(rate);
       }
-    } catch (e) {
-      print('Set speech rate error: $e');
-    }
+    } catch (e) {}
   }
 
   Future<void> setVolume(double volume) async {
@@ -302,9 +267,7 @@ class TtsController extends GetxController {
       if (flutterTts != null) {
         await flutterTts!.setVolume(volume);
       }
-    } catch (e) {
-      print('Set volume error: $e');
-    }
+    } catch (e) {}
   }
 
   Future<void> setPitch(double pitch) async {
@@ -313,9 +276,7 @@ class TtsController extends GetxController {
       if (flutterTts != null) {
         await flutterTts!.setPitch(pitch);
       }
-    } catch (e) {
-      print('Set pitch error: $e');
-    }
+    } catch (e) {}
   }
 
   Future<void> setLanguage(String language) async {
@@ -324,9 +285,7 @@ class TtsController extends GetxController {
       if (flutterTts != null) {
         await flutterTts!.setLanguage(language);
       }
-    } catch (e) {
-      print('Set language error: $e');
-    }
+    } catch (e) {}
   }
 
   // Computed properties for UI

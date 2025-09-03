@@ -41,21 +41,21 @@ class _SignupScreenState extends State<SignupScreen> {
 
       if (user != null) {
         final isAdmin = user.email == 'modinitish905@gmail.com';
-        
+
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => isAdmin 
-              ? AdminHomeScreen(
-                  userName: user.displayName ?? "Admin",
-                  userEmail: user.email ?? "No Email",
-                  userPhoto: user.photoURL ?? '',
-                )
-              : HomePage(
-                  userName: user.displayName ?? "No Name",
-                  userEmail: user.email ?? "No Email",
-                  userPhoto: user.photoURL ?? '',
-                ),
+            builder: (context) => isAdmin
+                ? AdminHomeScreen(
+                    userName: user.displayName ?? "Admin",
+                    userEmail: user.email ?? "No Email",
+                    userPhoto: user.photoURL ?? '',
+                  )
+                : HomePage(
+                    userName: user.displayName ?? "No Name",
+                    userEmail: user.email ?? "No Email",
+                    userPhoto: user.photoURL ?? '',
+                  ),
           ),
         );
       }

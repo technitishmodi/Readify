@@ -18,7 +18,8 @@ Future<void> main() async {
   // Initialize Supabase
   await Supabase.initialize(
     url: 'https://lthmabtzeanqofhvxjxq.supabase.co',
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx0aG1hYnR6ZWFucW9maHZ4anhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA4MjE0OTUsImV4cCI6MjA1NjM5NzQ5NX0.l0b06PjalyuhkjAJqw_9bbBmBv5j1qNTWU-MFKB5qSA',
+    anonKey:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx0aG1hYnR6ZWFucW9maHZ4anhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA4MjE0OTUsImV4cCI6MjA1NjM5NzQ5NX0.l0b06PjalyuhkjAJqw_9bbBmBv5j1qNTWU-MFKB5qSA',
   );
 
   // Initialize shared preferences and theme
@@ -56,27 +57,29 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return Obx(() => GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Readify',
-      theme: ThemeData.light(useMaterial3: true).copyWith(
-        primaryColor: const Color(0xFF4E6EFF),
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF4E6EFF),
-          brightness: Brightness.light,
-        ),
-        scaffoldBackgroundColor: const Color(0xFFF5F7FA),
-      ),
-      darkTheme: ThemeData.dark(useMaterial3: true).copyWith(
-        primaryColor: const Color(0xFF4E6EFF),
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF4E6EFF),
-          brightness: Brightness.dark,
-        ),
-        scaffoldBackgroundColor: Colors.grey[900],
-        cardColor: Colors.grey[800],
-      ),
-      themeMode: _themeController.isDarkMode.value ? ThemeMode.dark : ThemeMode.light,
-      home: const SplashScreen(),
-    ));
+          debugShowCheckedModeBanner: false,
+          title: 'Readify',
+          theme: ThemeData.light(useMaterial3: true).copyWith(
+            primaryColor: const Color(0xFF4E6EFF),
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: const Color(0xFF4E6EFF),
+              brightness: Brightness.light,
+            ),
+            scaffoldBackgroundColor: const Color(0xFFF5F7FA),
+          ),
+          darkTheme: ThemeData.dark(useMaterial3: true).copyWith(
+            primaryColor: const Color(0xFF4E6EFF),
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: const Color(0xFF4E6EFF),
+              brightness: Brightness.dark,
+            ),
+            scaffoldBackgroundColor: Colors.grey[900],
+            cardColor: Colors.grey[800],
+          ),
+          themeMode: _themeController.isDarkMode.value
+              ? ThemeMode.dark
+              : ThemeMode.light,
+          home: const SplashScreen(),
+        ));
   }
 }

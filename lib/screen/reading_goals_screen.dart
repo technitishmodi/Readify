@@ -50,7 +50,8 @@ class ReadingGoalsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProgressOverview(ReadingGoalsController controller, ColorScheme colorScheme) {
+  Widget _buildProgressOverview(
+      ReadingGoalsController controller, ColorScheme colorScheme) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -119,9 +120,10 @@ class ReadingGoalsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildGoalsList(ReadingGoalsController controller, ColorScheme colorScheme) {
+  Widget _buildGoalsList(
+      ReadingGoalsController controller, ColorScheme colorScheme) {
     final activeGoals = controller.getActiveGoals();
-    
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -161,10 +163,11 @@ class ReadingGoalsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMotivationalSection(ReadingGoalsController controller, ColorScheme colorScheme) {
+  Widget _buildMotivationalSection(
+      ReadingGoalsController controller, ColorScheme colorScheme) {
     final completedGoals = controller.goals.where((g) => g.isCompleted).length;
     final totalGoals = controller.goals.length;
-    
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -204,7 +207,8 @@ class ReadingGoalsScreen extends StatelessWidget {
     );
   }
 
-  void _showGoalSettings(BuildContext context, ReadingGoalsController controller) {
+  void _showGoalSettings(
+      BuildContext context, ReadingGoalsController controller) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -397,44 +401,47 @@ class _GoalSettingsSheet extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           Obx(() => _GoalSlider(
-            title: 'Daily Reading Goal',
-            subtitle: 'Minutes per day',
-            value: controller.dailyGoalMinutes.value.toDouble(),
-            min: 5,
-            max: 180,
-            divisions: 35,
-            onChanged: (value) => controller.updateDailyGoal(value.toInt()),
-          )),
+                title: 'Daily Reading Goal',
+                subtitle: 'Minutes per day',
+                value: controller.dailyGoalMinutes.value.toDouble(),
+                min: 5,
+                max: 180,
+                divisions: 35,
+                onChanged: (value) => controller.updateDailyGoal(value.toInt()),
+              )),
           const SizedBox(height: 16),
           Obx(() => _GoalSlider(
-            title: 'Weekly Books Goal',
-            subtitle: 'Books per week',
-            value: controller.weeklyGoalBooks.value.toDouble(),
-            min: 1,
-            max: 5,
-            divisions: 4,
-            onChanged: (value) => controller.updateWeeklyGoal(value.toInt()),
-          )),
+                title: 'Weekly Books Goal',
+                subtitle: 'Books per week',
+                value: controller.weeklyGoalBooks.value.toDouble(),
+                min: 1,
+                max: 5,
+                divisions: 4,
+                onChanged: (value) =>
+                    controller.updateWeeklyGoal(value.toInt()),
+              )),
           const SizedBox(height: 16),
           Obx(() => _GoalSlider(
-            title: 'Monthly Books Goal',
-            subtitle: 'Books per month',
-            value: controller.monthlyGoalBooks.value.toDouble(),
-            min: 1,
-            max: 20,
-            divisions: 19,
-            onChanged: (value) => controller.updateMonthlyGoal(value.toInt()),
-          )),
+                title: 'Monthly Books Goal',
+                subtitle: 'Books per month',
+                value: controller.monthlyGoalBooks.value.toDouble(),
+                min: 1,
+                max: 20,
+                divisions: 19,
+                onChanged: (value) =>
+                    controller.updateMonthlyGoal(value.toInt()),
+              )),
           const SizedBox(height: 16),
           Obx(() => _GoalSlider(
-            title: 'Yearly Books Goal',
-            subtitle: 'Books per year',
-            value: controller.yearlyGoalBooks.value.toDouble(),
-            min: 10,
-            max: 200,
-            divisions: 19,
-            onChanged: (value) => controller.updateYearlyGoal(value.toInt()),
-          )),
+                title: 'Yearly Books Goal',
+                subtitle: 'Books per year',
+                value: controller.yearlyGoalBooks.value.toDouble(),
+                min: 10,
+                max: 200,
+                divisions: 19,
+                onChanged: (value) =>
+                    controller.updateYearlyGoal(value.toInt()),
+              )),
           const SizedBox(height: 20),
         ],
       ),

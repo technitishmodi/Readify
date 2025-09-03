@@ -49,7 +49,6 @@ class _AdminHomeScreenState extends State<AdminHomeScreen>
 
   Future<void> _signOut() async {
     try {
-      // Show loading indicator
       Get.dialog(
         const Center(
           child: CircularProgressIndicator(),
@@ -57,41 +56,31 @@ class _AdminHomeScreenState extends State<AdminHomeScreen>
         barrierDismissible: false,
       );
 
-      // Sign out from Google first
       await GoogleSignIn().signOut();
-      
-      // Sign out from Firebase
+
       await FirebaseAuth.instance.signOut();
-      
-      // Add small delay to ensure sign out completes
+
       await Future.delayed(const Duration(milliseconds: 500));
-      
-      // Clear any cached data (non-critical operation)
+
+     
       try {
         await FirebaseFirestore.instance.clearPersistence();
       } catch (e) {
-        // Ignore cache clear errors as they're not critical
         print('Cache clear error (non-critical): $e');
       }
-      
-      // Close loading dialog
+
       if (Get.isDialogOpen ?? false) {
         Get.back();
       }
-      
-      // Add another small delay before navigation
+
       await Future.delayed(const Duration(milliseconds: 200));
-      
-      // Navigate to signup screen using GetX with complete stack replacement
+
       Get.offAll(() => const SignupScreen());
-      
     } catch (e) {
-      // Close loading dialog if it's open
       if (Get.isDialogOpen ?? false) {
         Get.back();
       }
-      
-      // Show error message
+
       Get.snackbar(
         'Sign Out Error',
         'Failed to sign out: ${e.toString()}',
@@ -195,10 +184,10 @@ class _AdminHomeScreenState extends State<AdminHomeScreen>
             onTap: () {
               Navigator.pop(context);
               Get.to(() => Profilepage(
-                userName: widget.userName,
-                userEmail: widget.userEmail,
-                userPhoto: widget.userPhoto,
-              ));
+                    userName: widget.userName,
+                    userEmail: widget.userEmail,
+                    userPhoto: widget.userPhoto,
+                  ));
             },
           ),
           const Divider(),
@@ -252,10 +241,10 @@ class _AdminHomeScreenState extends State<AdminHomeScreen>
                       Icons.library_books,
                       colorScheme.secondary,
                       () => Get.to(() => Profilepage(
-                        userName: widget.userName,
-                        userEmail: widget.userEmail,
-                        userPhoto: widget.userPhoto,
-                      )),
+                            userName: widget.userName,
+                            userEmail: widget.userEmail,
+                            userPhoto: widget.userPhoto,
+                          )),
                     ),
                   ],
                 ),
@@ -306,8 +295,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen>
                 child: Text(
                   title,
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                   textAlign: TextAlign.center,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -318,9 +307,12 @@ class _AdminHomeScreenState extends State<AdminHomeScreen>
                 child: Text(
                   description,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                    fontSize: 11,
-                  ),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.6),
+                        fontSize: 11,
+                      ),
                   textAlign: TextAlign.center,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,

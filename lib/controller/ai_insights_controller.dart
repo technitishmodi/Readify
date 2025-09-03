@@ -7,7 +7,7 @@ import 'dart:math';
 class AIInsightsController extends GetxController {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  
+
   // Observable variables
   final RxList<ReadingInsight> insights = <ReadingInsight>[].obs;
   final RxBool isLoading = false.obs;
@@ -39,7 +39,7 @@ class AIInsightsController extends GetxController {
     } catch (e) {
       print('AI Insights Error: $e');
       Get.snackbar(
-        'Error', 
+        'Error',
         'Failed to generate AI insights. Please try again.',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.withOpacity(0.8),
@@ -64,10 +64,7 @@ class AIInsightsController extends GetxController {
         .get();
 
     // Analyze book preferences
-    final booksSnapshot = await _db
-        .collection('books')
-        .limit(100)
-        .get();
+    final booksSnapshot = await _db.collection('books').limit(100).get();
 
     final bookmarksSnapshot = await _db
         .collection('UserBookmarks')
@@ -78,9 +75,9 @@ class AIInsightsController extends GetxController {
     // Calculate reading patterns
     final sessions = sessionsSnapshot.docs;
     final bookmarks = bookmarksSnapshot.docs;
-    
+
     totalBooksAnalyzed.value = sessions.length + bookmarks.length;
-    
+
     // Analyze preferred reading times
     final readingHours = <int>[];
     for (var session in sessions) {
@@ -101,7 +98,8 @@ class AIInsightsController extends GetxController {
     for (var bookmark in bookmarks) {
       try {
         final bookId = bookmark.data()['bookId'];
-        final bookDoc = booksSnapshot.docs.where((doc) => doc.id == bookId).firstOrNull;
+        final bookDoc =
+            booksSnapshot.docs.where((doc) => doc.id == bookId).firstOrNull;
         if (bookDoc != null && bookDoc.exists) {
           final category = bookDoc.data()['category'] ?? 'General';
           genres.add(category);
@@ -113,32 +111,36 @@ class AIInsightsController extends GetxController {
     }
 
     preferredGenres.value = _getMostFrequentGenres(genres);
-    
+
     // Calculate average session duration
     final durations = sessions
         .map((doc) => (doc.data()['duration'] ?? 0).toDouble())
         .where((d) => d > 0)
         .toList();
-    
-    final avgDuration = durations.isNotEmpty 
-        ? durations.reduce((a, b) => a + b) / durations.length 
+
+    final avgDuration = durations.isNotEmpty
+        ? durations.reduce((a, b) => a + b) / durations.length
         : 0.0;
 
     // Determine reading personality
-    readingPersonality.value = _determineReadingPersonality(avgDuration, readingHours, genres);
-    
+    readingPersonality.value =
+        _determineReadingPersonality(avgDuration, readingHours, genres);
+
     // Determine current reading mood
     readingMood.value = _determineReadingMood(genres, sessions.length);
   }
 
-  String _determineReadingPersonality(double avgDuration, List<int> readingHours, List<String> genres) {
+  String _determineReadingPersonality(
+      double avgDuration, List<int> readingHours, List<String> genres) {
     if (avgDuration > 45) {
       return 'Deep Diver';
     } else if (avgDuration > 20) {
       return 'Steady Reader';
-    } else if (readingHours.where((h) => h >= 6 && h <= 9).length > readingHours.length * 0.3) {
+    } else if (readingHours.where((h) => h >= 6 && h <= 9).length >
+        readingHours.length * 0.3) {
       return 'Morning Reader';
-    } else if (readingHours.where((h) => h >= 20 || h <= 2).length > readingHours.length * 0.3) {
+    } else if (readingHours.where((h) => h >= 20 || h <= 2).length >
+        readingHours.length * 0.3) {
       return 'Night Owl';
     } else if (genres.contains('Fiction') && genres.contains('Mystery')) {
       return 'Story Seeker';
@@ -168,16 +170,16 @@ class AIInsightsController extends GetxController {
     for (var genre in genres) {
       genreCount[genre] = (genreCount[genre] ?? 0) + 1;
     }
-    
+
     final sortedGenres = genreCount.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
-    
+
     return sortedGenres.take(3).map((e) => e.key).toList();
   }
 
   Future<void> _generatePersonalizedInsights() async {
     final insightsList = <ReadingInsight>[];
-    
+
     // Reading Personality Insight
     insightsList.add(ReadingInsight(
       id: 'personality',
@@ -194,11 +196,13 @@ class AIInsightsController extends GetxController {
       insightsList.add(ReadingInsight(
         id: 'genres',
         title: 'Your Favorite Genres',
-        description: 'You show a strong preference for ${preferredGenres.join(", ")}. This suggests you enjoy ${_getGenreCharacteristics(preferredGenres.first)}.',
+        description:
+            'You show a strong preference for ${preferredGenres.join(", ")}. This suggests you enjoy ${_getGenreCharacteristics(preferredGenres.first)}.',
         type: InsightType.preference,
         confidence: 0.75,
         actionable: true,
-        recommendation: 'Try exploring sub-genres within ${preferredGenres.first} or similar categories.',
+        recommendation:
+            'Try exploring sub-genres within ${preferredGenres.first} or similar categories.',
       ));
     }
 
@@ -206,7 +210,8 @@ class AIInsightsController extends GetxController {
     insightsList.add(ReadingInsight(
       id: 'mood',
       title: 'Current Reading Mood',
-      description: 'Your recent reading activity suggests you\'re feeling ${readingMood.value.toLowerCase()}.',
+      description:
+          'Your recent reading activity suggests you\'re feeling ${readingMood.value.toLowerCase()}.',
       type: InsightType.mood,
       confidence: 0.70,
       actionable: true,
@@ -313,7 +318,7 @@ class AIInsightsController extends GetxController {
   String _getConsistencyInsight() {
     final random = Random();
     final consistencyLevel = random.nextInt(3);
-    
+
     switch (consistencyLevel) {
       case 0:
         return 'You read in bursts - intense periods followed by breaks. This pattern can work well if you plan for it.';
@@ -327,7 +332,7 @@ class AIInsightsController extends GetxController {
   String _getDiscoveryInsight() {
     final random = Random();
     final discoveryType = random.nextInt(3);
-    
+
     switch (discoveryType) {
       case 0:
         return 'You tend to stick with familiar authors and genres. Branching out could reveal new favorites.';
@@ -340,7 +345,7 @@ class AIInsightsController extends GetxController {
 
   Future<void> _generateRecommendations() async {
     final recs = <BookRecommendation>[];
-    
+
     // Based on personality
     recs.add(BookRecommendation(
       id: 'personality_rec',
@@ -365,7 +370,8 @@ class AIInsightsController extends GetxController {
     recs.add(BookRecommendation(
       id: 'mood_rec',
       title: _getMoodBookRecommendation(readingMood.value),
-      reason: 'Aligns with your current ${readingMood.value.toLowerCase()} mood',
+      reason:
+          'Aligns with your current ${readingMood.value.toLowerCase()} mood',
       confidence: 0.75,
       category: 'Mood Match',
     ));

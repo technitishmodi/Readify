@@ -156,13 +156,11 @@ class Bookcard123 extends StatelessWidget {
                           // Author
                           Text(
                             "by $auther",
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodySmall
-                                ?.copyWith(
-                                  fontStyle: FontStyle.italic,
-                                  color: Colors.white70,
-                                ),
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      fontStyle: FontStyle.italic,
+                                      color: Colors.white70,
+                                    ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -361,8 +359,7 @@ class Bookcard123 extends StatelessWidget {
               await bookController.deleteUserBook(book!.id!);
               Navigator.pop(context);
             },
-            child:
-                const Text('Delete', style: TextStyle(color: Colors.white)),
+            child: const Text('Delete', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),

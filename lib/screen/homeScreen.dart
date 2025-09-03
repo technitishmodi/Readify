@@ -63,10 +63,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   final RxList<Bookmodel> _searchResults = <Bookmodel>[].obs;
   final RxString _selectedCategory = ''.obs;
   final _searchDebouncer = Debouncer(milliseconds: 300);
-  
+
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
-  
+
   @override
   void initState() {
     super.initState();
@@ -78,7 +78,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut),
     );
     _fadeController.forward();
-    
+
     // Debug: Print user info on initialization
     print('HomePage initialized with:');
     print('  userName: ${widget.userName}');
@@ -132,7 +132,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
         final bookController = Get.find<BookController>();
         bookController.clearAllData();
-        
+
         await FirebaseFirestore.instance.clearPersistence();
         await GoogleSignIn().signOut();
         await FirebaseAuth.instance.signOut();
@@ -145,7 +145,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       } catch (e) {
         // Close loading indicator if still open
         if (Get.isDialogOpen ?? false) Get.back();
-        
+
         _showErrorSnackBar('Failed to sign out. Please try again.');
       }
     }
@@ -174,10 +174,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       _isSearching.value = true;
       final bookController = Get.find<BookController>();
       final lowerCaseQuery = query.toLowerCase();
-      
+
       _searchResults.value = bookController.bookData.where((book) {
-        final titleMatch = book.title?.toLowerCase().contains(lowerCaseQuery) ?? false;
-        final authorMatch = book.auther?.toLowerCase().contains(lowerCaseQuery) ?? false;
+        final titleMatch =
+            book.title?.toLowerCase().contains(lowerCaseQuery) ?? false;
+        final authorMatch =
+            book.auther?.toLowerCase().contains(lowerCaseQuery) ?? false;
         return titleMatch || authorMatch;
       }).toList();
     });
@@ -196,7 +198,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         SnackBar(
           content: Text(message),
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       );
     }
@@ -209,8 +212,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       bookController.fetchBooks();
     } else {
       // Filter books by category
-      final filteredBooks = bookController.bookData.where((book) => 
-        book.category?.toLowerCase() == category.toLowerCase()).toList();
+      final filteredBooks = bookController.bookData
+          .where(
+              (book) => book.category?.toLowerCase() == category.toLowerCase())
+          .toList();
       bookController.bookData.value = filteredBooks;
     }
   }
@@ -249,54 +254,56 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             ),
           ),
         ),
-        floatingActionButton: isAdmin ? null : FloatingActionButton.extended(
-          onPressed: () {
-            FocusScope.of(context).unfocus();
-            Get.to(() => ThoughtsPage());
-          },
-          icon: const Icon(Icons.chat_bubble_outline),
-          label: const Text('Share Thoughts'),
-          tooltip: 'Share your thoughts with the community',
-        ),
+        floatingActionButton: isAdmin
+            ? null
+            : FloatingActionButton.extended(
+                onPressed: () {
+                  FocusScope.of(context).unfocus();
+                  Get.to(() => ThoughtsPage());
+                },
+                icon: const Icon(Icons.chat_bubble_outline),
+                label: const Text('Share Thoughts'),
+                tooltip: 'Share your thoughts with the community',
+              ),
       ),
     );
   }
 
   PreferredSizeWidget _buildAppBar(ColorScheme colorScheme) {
     return AppBar(
-  title: Text(
-    'Readify',
-    style: const TextStyle(
-      color: Colors.white, // since blueAccent is dark, keep text white
-      fontWeight: FontWeight.bold,
-      fontSize: 24,
-    ),
-  ),
-  backgroundColor: Colors.blueAccent, // changed to blueAccent
-  foregroundColor: Colors.white, // icons/text color
-  elevation: 0,
-  actions: [
-    IconButton(
-      icon: const Icon(Icons.search_outlined),
-      onPressed: () {
-        showSearch(
-          context: context,
-          delegate: _ModernBookSearchDelegate(Get.find<BookController>().bookData),
-        );
-      },
-      tooltip: 'Search books',
-    ),
-    IconButton(
-      icon: const Icon(Icons.request_page_outlined),
-      onPressed: () {
-        FocusScope.of(context).unfocus();
-        Get.to(() => RequestBookPage());
-      },
-      tooltip: 'Request a book',
-    ),
-  ],
-);
-
+      title: Text(
+        'Readify',
+        style: const TextStyle(
+          color: Colors.white, // since blueAccent is dark, keep text white
+          fontWeight: FontWeight.bold,
+          fontSize: 24,
+        ),
+      ),
+      backgroundColor: Colors.blueAccent, // changed to blueAccent
+      foregroundColor: Colors.white, // icons/text color
+      elevation: 0,
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.search_outlined),
+          onPressed: () {
+            showSearch(
+              context: context,
+              delegate: _ModernBookSearchDelegate(
+                  Get.find<BookController>().bookData),
+            );
+          },
+          tooltip: 'Search books',
+        ),
+        IconButton(
+          icon: const Icon(Icons.request_page_outlined),
+          onPressed: () {
+            FocusScope.of(context).unfocus();
+            Get.to(() => RequestBookPage());
+          },
+          tooltip: 'Request a book',
+        ),
+      ],
+    );
   }
 
   Widget _buildHeaderSection(ThemeData theme, ColorScheme colorScheme) {
@@ -317,7 +324,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             const SizedBox(height: 24),
             _buildSearchBar(colorScheme),
             const SizedBox(height: 16),
-            Obx(() => _isSearching.value 
+            Obx(() => _isSearching.value
                 ? _buildSearchResults(theme, colorScheme)
                 : _buildCategoryChips(colorScheme)),
           ],
@@ -380,7 +387,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         onChanged: _searchBooks,
         decoration: InputDecoration(
           hintText: 'Search books, authors...',
-          prefixIcon: Icon(Icons.search_outlined, color: colorScheme.onSurfaceVariant),
+          prefixIcon:
+              Icon(Icons.search_outlined, color: colorScheme.onSurfaceVariant),
           suffixIcon: Obx(() => _isSearching.value
               ? IconButton(
                   icon: const Icon(Icons.close),
@@ -393,7 +401,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           ),
           filled: true,
           fillColor: colorScheme.surface,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         ),
       ),
     );
@@ -417,7 +426,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               ? Center(
                   child: Text(
                     'No books found',
-                    style: TextStyle(color: colorScheme.onPrimary.withOpacity(0.7)),
+                    style: TextStyle(
+                        color: colorScheme.onPrimary.withOpacity(0.7)),
                   ),
                 )
               : ListView.builder(
@@ -457,11 +467,16 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           child: Row(
             children: [
               _CategoryChip('All', Icons.apps_outlined, colorScheme, ''),
-              _CategoryChip('Romance', Icons.favorite_outline, colorScheme, 'Romance'),
-              _CategoryChip('Travel', Icons.travel_explore_outlined, colorScheme, 'Travel'),
-              _CategoryChip('Horror', Icons.psychology_outlined, colorScheme, 'Horror'),
-              _CategoryChip('Document', Icons.description_outlined, colorScheme, 'Document'),
-              _CategoryChip('Fiction', Icons.auto_stories_outlined, colorScheme, 'Fiction'),
+              _CategoryChip(
+                  'Romance', Icons.favorite_outline, colorScheme, 'Romance'),
+              _CategoryChip('Travel', Icons.travel_explore_outlined,
+                  colorScheme, 'Travel'),
+              _CategoryChip(
+                  'Horror', Icons.psychology_outlined, colorScheme, 'Horror'),
+              _CategoryChip('Document', Icons.description_outlined, colorScheme,
+                  'Document'),
+              _CategoryChip('Fiction', Icons.auto_stories_outlined, colorScheme,
+                  'Fiction'),
             ],
           ),
         ),
@@ -469,7 +484,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildMainContent(ThemeData theme, ColorScheme colorScheme, BookController bookController) {
+  Widget _buildMainContent(
+      ThemeData theme, ColorScheme colorScheme, BookController bookController) {
     return Obx(() => _isSearching.value
         ? const SliverToBoxAdapter(child: SizedBox.shrink())
         : SliverToBoxAdapter(
@@ -529,7 +545,7 @@ class _ModernDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final isAdmin = userEmail == 'modinitish905@gmail.com';
-    
+
     return NavigationDrawer(
       children: [
         DrawerHeader(
@@ -596,10 +612,10 @@ class _ModernDrawer extends StatelessWidget {
             onTap: () {
               Navigator.pop(context);
               Get.to(() => Profilepage(
-                userName: userName,
-                userEmail: userEmail,
-                userPhoto: userPhoto,
-              ));
+                    userName: userName,
+                    userEmail: userEmail,
+                    userPhoto: userPhoto,
+                  ));
             },
           ),
         ] else ...[
@@ -614,10 +630,10 @@ class _ModernDrawer extends StatelessWidget {
             onTap: () {
               Navigator.pop(context);
               Get.to(() => Profilepage(
-                userName: userName,
-                userEmail: userEmail,
-                userPhoto: userPhoto,
-              ));
+                    userName: userName,
+                    userEmail: userEmail,
+                    userPhoto: userPhoto,
+                  ));
             },
           ),
           ListTile(
@@ -724,12 +740,13 @@ class _CategoryChip extends StatelessWidget {
   final ColorScheme colorScheme;
   final String categoryValue;
 
-  const _CategoryChip(this.label, this.icon, this.colorScheme, this.categoryValue);
+  const _CategoryChip(
+      this.label, this.icon, this.colorScheme, this.categoryValue);
 
   @override
   Widget build(BuildContext context) {
     final bookController = Get.find<BookController>();
-    
+
     return Padding(
       padding: const EdgeInsets.only(right: 8),
       child: FilterChip(
@@ -742,10 +759,10 @@ class _CategoryChip extends StatelessWidget {
           } else {
             // Navigate to CategoryBooksPage for specific category
             Get.to(() => CategoryBooksPage(
-              categoryName: categoryValue,
-              categoryIcon: icon,
-              bookController: bookController,
-            ));
+                  categoryName: categoryValue,
+                  categoryIcon: icon,
+                  bookController: bookController,
+                ));
           }
         },
         backgroundColor: colorScheme.surface,
@@ -899,7 +916,8 @@ class _UserLibrarySection extends StatelessWidget {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
                             color: colorScheme.surfaceContainerHighest,
-                            image: book.imageUrl != null && book.imageUrl!.isNotEmpty
+                            image: book.imageUrl != null &&
+                                    book.imageUrl!.isNotEmpty
                                 ? DecorationImage(
                                     image: NetworkImage(book.imageUrl!),
                                     fit: BoxFit.cover,
@@ -909,8 +927,8 @@ class _UserLibrarySection extends StatelessWidget {
                           child: book.imageUrl == null || book.imageUrl!.isEmpty
                               ? Center(
                                   child: Icon(
-                                    Icons.book, 
-                                    size: 40, 
+                                    Icons.book,
+                                    size: 40,
                                     color: colorScheme.onSurfaceVariant,
                                   ),
                                 )
@@ -952,11 +970,12 @@ class _UserLibrarySection extends StatelessWidget {
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         const Icon(Icons.star,
-                                          color: Colors.amber,
-                                          size: 16),
+                                            color: Colors.amber, size: 16),
                                         const SizedBox(width: 4),
                                         Text(
-                                          (double.tryParse(book.ratings ?? '0')?.toStringAsFixed(1)) ?? '0.0',
+                                          (double.tryParse(book.ratings ?? '0')
+                                                  ?.toStringAsFixed(1)) ??
+                                              '0.0',
                                           style: const TextStyle(
                                             fontWeight: FontWeight.w600,
                                             fontSize: 13,
@@ -968,17 +987,17 @@ class _UserLibrarySection extends StatelessWidget {
                                   const Spacer(),
                                   if (bookController.isUserBookOwner(book)) ...[
                                     IconButton(
-                                      icon: Icon(Icons.edit, 
-                                        color: colorScheme.primary, 
-                                        size: 20),
-                                      onPressed: () => _showEditDialog(context, book),
+                                      icon: Icon(Icons.edit,
+                                          color: colorScheme.primary, size: 20),
+                                      onPressed: () =>
+                                          _showEditDialog(context, book),
                                       tooltip: 'Edit Book',
                                     ),
                                     IconButton(
-                                      icon: const Icon(Icons.delete, 
-                                        color: Colors.red, 
-                                        size: 20),
-                                      onPressed: () => _showDeleteDialog(context, book),
+                                      icon: const Icon(Icons.delete,
+                                          color: Colors.red, size: 20),
+                                      onPressed: () =>
+                                          _showDeleteDialog(context, book),
                                       tooltip: 'Delete Book',
                                     ),
                                   ] else
@@ -1010,7 +1029,7 @@ class _UserLibrarySection extends StatelessWidget {
   void _showEditDialog(BuildContext context, Bookmodel book) {
     final bookController = Get.find<BookController>();
     bookController.populateEditForm(book);
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -1075,7 +1094,8 @@ class _UserLibrarySection extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Book'),
-        content: Text('Are you sure you want to delete "${book.title}"? This action cannot be undone.'),
+        content: Text(
+            'Are you sure you want to delete "${book.title}"? This action cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -1173,8 +1193,10 @@ class _ModernBookSearchDelegate extends SearchDelegate {
 
   Widget _buildSearchResults(BuildContext context) {
     final results = books.where((book) {
-      final titleMatch = book.title?.toLowerCase().contains(query.toLowerCase()) ?? false;
-      final authorMatch = book.auther?.toLowerCase().contains(query.toLowerCase()) ?? false;
+      final titleMatch =
+          book.title?.toLowerCase().contains(query.toLowerCase()) ?? false;
+      final authorMatch =
+          book.auther?.toLowerCase().contains(query.toLowerCase()) ?? false;
       return titleMatch || authorMatch;
     }).toList();
 
@@ -1185,7 +1207,8 @@ class _ModernBookSearchDelegate extends SearchDelegate {
           children: [
             Icon(Icons.search_off, size: 64, color: Colors.grey),
             SizedBox(height: 16),
-            Text('No books found', style: TextStyle(fontSize: 18, color: Colors.grey)),
+            Text('No books found',
+                style: TextStyle(fontSize: 18, color: Colors.grey)),
           ],
         ),
       );
@@ -1206,7 +1229,8 @@ class _ModernBookSearchDelegate extends SearchDelegate {
                       width: 50,
                       height: 70,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => const Icon(Icons.book, size: 50),
+                      errorBuilder: (_, __, ___) =>
+                          const Icon(Icons.book, size: 50),
                     )
                   : const Icon(Icons.book, size: 50),
             ),
@@ -1233,4 +1257,4 @@ class _ModernBookSearchDelegate extends SearchDelegate {
       },
     );
   }
-}  
+}

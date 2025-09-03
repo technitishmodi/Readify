@@ -71,25 +71,20 @@ class _ProfilepageState extends State<Profilepage>
 
     if (result == true) {
       try {
-        // Show loading indicator
         Get.dialog(
           const Center(child: CircularProgressIndicator()),
           barrierDismissible: false,
         );
 
-        // Sign out from Firebase
         await FirebaseAuth.instance.signOut();
 
-        // Sign out from Google (if using Google Sign-In)
+        
         await GoogleSignIn().signOut();
 
-        // Close loading indicator
+       
         Get.back();
-
-        // Navigate to SignupScreen and clear navigation stack
         Get.offAll(() => const SignupScreen());
       } catch (e) {
-        // Close loading indicator if still open
         if (Get.isDialogOpen ?? false) Get.back();
 
         Get.snackbar(

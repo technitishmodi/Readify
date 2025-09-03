@@ -11,7 +11,7 @@ class RequestBookPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
-    
+
     return Scaffold(
       appBar: AppBar(title: const Text('Request an eBook')),
       body: Padding(

@@ -66,7 +66,8 @@ class AboutAdmin extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
                       color: Colors.blueAccent.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(20),
@@ -95,7 +96,8 @@ class AboutAdmin extends StatelessWidget {
               context,
               title: 'About Me',
               icon: Icons.person_outline,
-              content: "I am a passionate Full Stack App Developer currently in my 3rd year of pursuing a Bachelor's degree in Computer Science Engineering at St. Andrews Institute of Technology and Management.\n\n"
+              content:
+                  "I am a passionate Full Stack App Developer currently in my 3rd year of pursuing a Bachelor's degree in Computer Science Engineering at St. Andrews Institute of Technology and Management.\n\n"
                   "With a strong foundation in modern technologies such as Flutter and Dart, I specialize in crafting scalable, user-centric mobile applications. My focus lies in building intuitive UIs and clean architectures that deliver seamless digital experiences.\n\n"
                   "In addition to app development, I am a dedicated cybersecurity enthusiast with hands-on knowledge in areas like Network Security, Phishing Detection, Data Encryption & Decryption, Vulnerability Assessment, and the OWASP Top 10. My insights into ethical hacking and the dark web ecosystem further strengthen my approach to secure coding and threat mitigation.\n\n"
                   "By combining development and security expertise, I aim to create impactful, resilient software that not only functions beautifully but stands strong against evolving digital threats.",
@@ -134,7 +136,10 @@ class AboutAdmin extends StatelessWidget {
     );
   }
 
-  Widget _buildModernCard(BuildContext context, {required String title, required IconData icon, required String content}) {
+  Widget _buildModernCard(BuildContext context,
+      {required String title,
+      required IconData icon,
+      required String content}) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -178,7 +183,7 @@ class AboutAdmin extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color:Colors.blueAccent.withOpacity(0.1),
+        color: Colors.blueAccent.withOpacity(0.1),
         borderRadius: BorderRadius.circular(24),
       ),
       child: Column(
@@ -298,8 +303,8 @@ class AboutAdmin extends StatelessWidget {
                   () => _launchUrl(
                       'https://www.linkedin.com/in/nitish-modi-206205294/')),
               const SizedBox(width: 16),
-              _buildSocialIcon(
-                  Icons.public, () => _launchUrl('https://nitishmodi.netlify.appp')),
+              _buildSocialIcon(Icons.public,
+                  () => _launchUrl('https://nitishmodi.netlify.appp')),
             ],
           ),
         ],
@@ -323,8 +328,8 @@ class AboutAdmin extends StatelessWidget {
           ),
         ),
         child: Icon(
-          icon, 
-          size: 24, 
+          icon,
+          size: 24,
           color: Colors.blueAccent,
         ),
       ),

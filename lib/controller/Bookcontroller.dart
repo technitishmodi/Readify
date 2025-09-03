@@ -30,7 +30,7 @@ class BookController extends GetxController {
   var userBooks = <Bookmodel>[].obs; // For storing user's books
   RxBool isUserBooksLoading = false.obs; // Loading state for user books
   Rx<Bookmodel?> selectedBook =
-  Rx<Bookmodel?>(null); // Added for selected book functionality
+      Rx<Bookmodel?>(null); // Added for selected book functionality
 
 //for thought posts
   final RxList<ThoughtPost> thoughtPosts = <ThoughtPost>[].obs;
@@ -81,73 +81,74 @@ class BookController extends GetxController {
   // Fetch thoughts from Firestore
 
   // Add this to your BookController class
-Future<void> deleteBook(String bookId) async {
-  try {
-    isLoading(true);
-    final user = auth.currentUser;
-    if (user == null) throw Exception('User not logged in');
-
-    // First verify the book belongs to current user
-    final bookDoc = await db.collection("Book").doc(bookId).get();
-    if (!bookDoc.exists) throw Exception('Book not found');
-    
-    final bookData = bookDoc.data();
-    if (bookData?['uploaderId'] != user.uid) {
-      throw Exception('You can only delete your own books');
-    }
-
-    // Delete from main collection
-    await db.collection("Book").doc(bookId).delete();
-
-    // Delete from user's personal collection
-    await db
-        .collection("UserBook")
-        .doc(user.uid)
-        .collection("Books")
-        .doc(bookId)
-        .delete();
-
-    // Delete files from Supabase storage if they exist
+  Future<void> deleteBook(String bookId) async {
     try {
-      if (bookData?['bookUrl'] != null) {
-        final pdfPath = _extractPathFromUrl(bookData!['bookUrl']);
-        await Supabase.instance.client.storage
-            .from(bucketName)
-            .remove([pdfPath]);
+      isLoading(true);
+      final user = auth.currentUser;
+      if (user == null) throw Exception('User not logged in');
+
+      // First verify the book belongs to current user
+      final bookDoc = await db.collection("Book").doc(bookId).get();
+      if (!bookDoc.exists) throw Exception('Book not found');
+
+      final bookData = bookDoc.data();
+      if (bookData?['uploaderId'] != user.uid) {
+        throw Exception('You can only delete your own books');
       }
-      
-      if (bookData?['imageUrl'] != null) {
-        final imagePath = _extractPathFromUrl(bookData!['imageUrl']);
-        await Supabase.instance.client.storage
-            .from(bucketName)
-            .remove([imagePath]);
+
+      // Delete from main collection
+      await db.collection("Book").doc(bookId).delete();
+
+      // Delete from user's personal collection
+      await db
+          .collection("UserBook")
+          .doc(user.uid)
+          .collection("Books")
+          .doc(bookId)
+          .delete();
+
+      // Delete files from Supabase storage if they exist
+      try {
+        if (bookData?['bookUrl'] != null) {
+          final pdfPath = _extractPathFromUrl(bookData!['bookUrl']);
+          await Supabase.instance.client.storage
+              .from(bucketName)
+              .remove([pdfPath]);
+        }
+
+        if (bookData?['imageUrl'] != null) {
+          final imagePath = _extractPathFromUrl(bookData!['imageUrl']);
+          await Supabase.instance.client.storage
+              .from(bucketName)
+              .remove([imagePath]);
+        }
+      } catch (e) {
+        print('Error deleting files from storage: $e');
       }
+
+      // Refresh lists
+      await fetchBooks();
+      await fetchUserBooks();
+
+      Get.snackbar('Success', 'Book deleted successfully');
     } catch (e) {
-      print('Error deleting files from storage: $e');
+      Get.snackbar('Error', 'Failed to delete book: ${e.toString()}');
+      rethrow;
+    } finally {
+      isLoading(false);
     }
-
-    // Refresh lists
-    await fetchBooks();
-    await fetchUserBooks();
-
-    Get.snackbar('Success', 'Book deleted successfully');
-  } catch (e) {
-    Get.snackbar('Error', 'Failed to delete book: ${e.toString()}');
-    rethrow;
-  } finally {
-    isLoading(false);
   }
-}
 
 // Helper method to extract path from URL
-String _extractPathFromUrl(String url) {
-  try {
-    final uri = Uri.parse(url);
-    return uri.path.split('/storage/v1/object/public/').last;
-  } catch (e) {
-    return url; // fallback to original if parsing fails
+  String _extractPathFromUrl(String url) {
+    try {
+      final uri = Uri.parse(url);
+      return uri.path.split('/storage/v1/object/public/').last;
+    } catch (e) {
+      return url; // fallback to original if parsing fails
+    }
   }
-}
+
   Future<void> fetchThoughts() async {
     try {
       final snapshot = await db
@@ -432,7 +433,8 @@ String _extractPathFromUrl(String url) {
     }
   }
 
-  Future<void> createBook({String visibility = 'public', String? category}) async {
+  Future<void> createBook(
+      {String visibility = 'public', String? category}) async {
     try {
       if (title.text.isEmpty || pdfUrl.isEmpty) {
         throw Exception('Title and PDF are required');
@@ -513,7 +515,7 @@ String _extractPathFromUrl(String url) {
       // First verify the book belongs to current user
       final bookDoc = await db.collection("Book").doc(bookId).get();
       if (!bookDoc.exists) throw Exception('Book not found');
-      
+
       final bookData = bookDoc.data();
       if (bookData?['uploaderId'] != user.uid) {
         throw Exception('You can only delete your own books');
@@ -535,10 +537,12 @@ String _extractPathFromUrl(String url) {
         if (bookData?['bookUrl'] != null) {
           final pdfPath = _extractPathFromUrl(bookData!['bookUrl']);
           await Supabase.instance.client.storage
-              .from(bookData['bookUrl'].toString().contains('.pdf') ? bucketName_1 : bucketName)
+              .from(bookData['bookUrl'].toString().contains('.pdf')
+                  ? bucketName_1
+                  : bucketName)
               .remove([pdfPath]);
         }
-        
+
         if (bookData?['imageUrl'] != null) {
           final imagePath = _extractPathFromUrl(bookData!['imageUrl']);
           await Supabase.instance.client.storage
@@ -563,7 +567,8 @@ String _extractPathFromUrl(String url) {
   }
 
   // Edit user's book
-  Future<void> editUserBook(String bookId, {
+  Future<void> editUserBook(
+    String bookId, {
     String? newTitle,
     String? newDescription,
     String? newAuthorName,
@@ -578,7 +583,7 @@ String _extractPathFromUrl(String url) {
       // Verify the book belongs to current user
       final bookDoc = await db.collection("Book").doc(bookId).get();
       if (!bookDoc.exists) throw Exception('Book not found');
-      
+
       final bookData = bookDoc.data();
       if (bookData?['uploaderId'] != user.uid) {
         throw Exception('You can only edit your own books');

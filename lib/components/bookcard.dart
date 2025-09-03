@@ -33,7 +33,7 @@ class Bookcard extends StatelessWidget {
             onTap: onTap,
             child: SizedBox(
               width: 120,
-              height: 220, 
+              height: 220,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -61,13 +61,15 @@ class Bookcard extends StatelessWidget {
                               width: 120,
                               height: 180,
                               fit: BoxFit.cover,
-                              loadingBuilder: (context, child, loadingProgress) {
+                              loadingBuilder:
+                                  (context, child, loadingProgress) {
                                 if (loadingProgress == null) return child;
                                 return Center(
                                   child: CircularProgressIndicator(
                                     value: loadingProgress.expectedTotalBytes !=
                                             null
-                                        ? loadingProgress.cumulativeBytesLoaded /
+                                        ? loadingProgress
+                                                .cumulativeBytesLoaded /
                                             loadingProgress.expectedTotalBytes!
                                         : null,
                                   ),
@@ -126,18 +128,22 @@ class Bookcard extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.edit, color: Colors.white, size: 16),
+                      icon:
+                          const Icon(Icons.edit, color: Colors.white, size: 16),
                       onPressed: () => _showEditDialog(context),
                       tooltip: 'Edit Book',
                       padding: const EdgeInsets.all(4),
-                      constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                      constraints:
+                          const BoxConstraints(minWidth: 32, minHeight: 32),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.red, size: 16),
+                      icon:
+                          const Icon(Icons.delete, color: Colors.red, size: 16),
                       onPressed: () => _showDeleteDialog(context),
                       tooltip: 'Delete Book',
                       padding: const EdgeInsets.all(4),
-                      constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                      constraints:
+                          const BoxConstraints(minWidth: 32, minHeight: 32),
                     ),
                   ],
                 ),
@@ -150,10 +156,10 @@ class Bookcard extends StatelessWidget {
 
   void _showEditDialog(BuildContext context) {
     if (book == null) return;
-    
+
     final bookController = Get.find<BookController>();
     bookController.populateEditForm(book!);
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -215,12 +221,13 @@ class Bookcard extends StatelessWidget {
 
   void _showDeleteDialog(BuildContext context) {
     if (book == null) return;
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Book'),
-        content: Text('Are you sure you want to delete "${book!.title}"? This action cannot be undone.'),
+        content: Text(
+            'Are you sure you want to delete "${book!.title}"? This action cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),

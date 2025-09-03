@@ -46,9 +46,10 @@ class ReadingAnalyticsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatsOverview(ReadingProgressController controller, ColorScheme colorScheme) {
+  Widget _buildStatsOverview(
+      ReadingProgressController controller, ColorScheme colorScheme) {
     final stats = controller.getReadingStats();
-    
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -100,7 +101,8 @@ class ReadingAnalyticsScreen extends StatelessWidget {
                 Expanded(
                   child: _StatCard(
                     title: 'This Week',
-                    value: '${(stats['thisWeekMinutes'] / 60).toStringAsFixed(1)}h',
+                    value:
+                        '${(stats['thisWeekMinutes'] / 60).toStringAsFixed(1)}h',
                     icon: Icons.schedule,
                     color: Colors.purple,
                   ),
@@ -113,7 +115,8 @@ class ReadingAnalyticsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildReadingChart(ReadingProgressController controller, ColorScheme colorScheme) {
+  Widget _buildReadingChart(
+      ReadingProgressController controller, ColorScheme colorScheme) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -134,7 +137,7 @@ class ReadingAnalyticsScreen extends StatelessWidget {
               child: Obx(() {
                 final dailyData = controller.dailyReadingMinutes;
                 final last7Days = _getLast7Days();
-                
+
                 return BarChart(
                   BarChartData(
                     alignment: BarChartAlignment.spaceAround,
@@ -160,7 +163,8 @@ class ReadingAnalyticsScreen extends StatelessWidget {
                                   );
                                 }
                               } catch (e) {
-                                print('DEBUG: Error parsing date for chart: $e');
+                                print(
+                                    'DEBUG: Error parsing date for chart: $e');
                               }
                             }
                             return const Text('');
@@ -178,15 +182,17 @@ class ReadingAnalyticsScreen extends StatelessWidget {
                           },
                         ),
                       ),
-                      topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                      rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                      topTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false)),
+                      rightTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false)),
                     ),
                     borderData: FlBorderData(show: false),
                     barGroups: last7Days.asMap().entries.map((entry) {
                       final index = entry.key;
                       final dateKey = entry.value;
                       final minutes = dailyData[dateKey] ?? 0;
-                      
+
                       return BarChartGroupData(
                         x: index,
                         barRods: [
@@ -209,7 +215,8 @@ class ReadingAnalyticsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStreakSection(ReadingProgressController controller, ColorScheme colorScheme) {
+  Widget _buildStreakSection(
+      ReadingProgressController controller, ColorScheme colorScheme) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -254,9 +261,11 @@ class ReadingAnalyticsScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       LinearProgressIndicator(
-                        value: controller.currentStreak.value / (controller.longestStreak.value + 1),
+                        value: controller.currentStreak.value /
+                            (controller.longestStreak.value + 1),
                         backgroundColor: colorScheme.surfaceContainerHighest,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.orange),
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(Colors.orange),
                       ),
                     ],
                   ),
@@ -269,7 +278,8 @@ class ReadingAnalyticsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildRecentSessions(ReadingProgressController controller, ColorScheme colorScheme) {
+  Widget _buildRecentSessions(
+      ReadingProgressController controller, ColorScheme colorScheme) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -287,7 +297,7 @@ class ReadingAnalyticsScreen extends StatelessWidget {
             const SizedBox(height: 16),
             Obx(() {
               final sessions = controller.readingSessions.take(5).toList();
-              
+
               if (sessions.isEmpty) {
                 return Center(
                   child: Text(
@@ -296,7 +306,7 @@ class ReadingAnalyticsScreen extends StatelessWidget {
                   ),
                 );
               }
-              
+
               return ListView.separated(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -353,11 +363,11 @@ class ReadingAnalyticsScreen extends StatelessWidget {
   String _formatDate(DateTime date) {
     final now = DateTime.now();
     final difference = now.difference(date).inDays;
-    
+
     if (difference == 0) return 'Today';
     if (difference == 1) return 'Yesterday';
     if (difference < 7) return '${difference} days ago';
-    
+
     return '${date.day}/${date.month}/${date.year}';
   }
 }

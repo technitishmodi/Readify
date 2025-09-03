@@ -171,9 +171,10 @@ class AddNewbook extends StatelessWidget {
                                     TextButton(
                                       onPressed: () {
                                         Navigator.pop(context);
-                                        bookController.createBook(visibility: 'private');
+                                        bookController.createBook(
+                                            visibility: 'private');
                                         Get.snackbar(
-                                          'Success', 
+                                          'Success',
                                           'Book added as private',
                                           duration: Duration(seconds: 2),
                                         );
@@ -249,7 +250,7 @@ class AddNewbook extends StatelessWidget {
                   category: category['name'] as String,
                 );
                 Get.snackbar(
-                  'Success', 
+                  'Success',
                   'Book added as public in ${category['name']} category',
                   duration: Duration(seconds: 2),
                 );

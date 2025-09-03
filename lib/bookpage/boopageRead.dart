@@ -11,15 +11,14 @@ class Boopageread extends StatefulWidget {
   final String bookId;
   final String bookTitle;
   final bool enableTts;
-  
-  Boopageread({
-    super.key, 
-    required this.pdfUrl,
-    required this.bookId,
-    required this.bookTitle,
-    this.enableTts = false
-  });
-  
+
+  Boopageread(
+      {super.key,
+      required this.pdfUrl,
+      required this.bookId,
+      required this.bookTitle,
+      this.enableTts = false});
+
   final PdfController pdfController = Get.put(PdfController());
 
   @override
@@ -28,9 +27,11 @@ class Boopageread extends StatefulWidget {
 
 class _BoopagereadState extends State<Boopageread> {
   final ThemeController _themeController = Get.find<ThemeController>();
-  final ReadingProgressController _progressController = Get.put(ReadingProgressController());
-  final SmartBookmarkController _bookmarkController = Get.put(SmartBookmarkController());
-  
+  final ReadingProgressController _progressController =
+      Get.put(ReadingProgressController());
+  final SmartBookmarkController _bookmarkController =
+      Get.put(SmartBookmarkController());
+
   bool isPlaying = false;
   int currentPage = 1;
   int totalPages = 0;
@@ -162,7 +163,7 @@ class _BoopagereadState extends State<Boopageread> {
 
   void _showProgressDialog() {
     final progress = _progressController.getBookProgress(widget.bookId);
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -201,7 +202,7 @@ class _BoopagereadState extends State<Boopageread> {
   String _formatDate(DateTime date) {
     final now = DateTime.now();
     final difference = now.difference(date).inDays;
-    
+
     if (difference == 0) return 'Today';
     if (difference == 1) return 'Yesterday';
     return '${difference} days ago';
@@ -211,7 +212,7 @@ class _BoopagereadState extends State<Boopageread> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
-    
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: isDarkMode ? Colors.grey[900] : Colors.blue,
@@ -270,7 +271,8 @@ class _BoopagereadState extends State<Boopageread> {
           FloatingActionButton(
             heroTag: "bookmarks",
             onPressed: () {
-              widget.pdfController.pdfViewerKey.currentState?.openBookmarkView();
+              widget.pdfController.pdfViewerKey.currentState
+                  ?.openBookmarkView();
             },
             backgroundColor: isDarkMode ? Colors.grey[800] : Colors.blue,
             child: const Icon(Icons.bookmark),
@@ -300,7 +302,7 @@ class _BoopagereadState extends State<Boopageread> {
             setState(() {
               currentPage = details.newPageNumber;
             });
-            
+
             // Update reading progress
             if (totalPages > 0) {
               _progressController.updateBookProgress(
@@ -345,7 +347,8 @@ class _BoopagereadState extends State<Boopageread> {
                 child: LinearProgressIndicator(
                   value: currentPage / totalPages,
                   backgroundColor: theme.colorScheme.surfaceContainerHighest,
-                  valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
+                  valueColor:
+                      AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
                 ),
               ),
             if (selectedText.isNotEmpty)
@@ -356,7 +359,8 @@ class _BoopagereadState extends State<Boopageread> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.amber,
                   foregroundColor: Colors.black,
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 ),
               ),
           ],

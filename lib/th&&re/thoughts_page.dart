@@ -12,7 +12,7 @@ class ThoughtsPage extends StatefulWidget {
 
 class _ThoughtsPageState extends State<ThoughtsPage> {
   final BookController bookController = Get.find();
-  final String inspirationalQuote = 
+  final String inspirationalQuote =
       "Your thoughts are more than words — they're sparks that inspire, "
       "connect, and shape a community of readers."
       "So share your thought freely";
@@ -56,13 +56,12 @@ class _ThoughtsPageState extends State<ThoughtsPage> {
               textAlign: TextAlign.center,
             ),
           ),
-          
           Expanded(
             child: Obx(() {
               if (bookController.isLoading.value) {
                 return const Center(child: CircularProgressIndicator());
               }
-              
+
               if (bookController.thoughtPosts.isEmpty) {
                 return const Center(
                   child: Text(
@@ -71,23 +70,24 @@ class _ThoughtsPageState extends State<ThoughtsPage> {
                   ),
                 );
               }
-              
+
               return RefreshIndicator(
                 onRefresh: () => bookController.fetchThoughts(),
                 child: ListView.separated(
                   padding: const EdgeInsets.only(top: 8, bottom: 80),
                   itemCount: bookController.thoughtPosts.length,
-                  separatorBuilder: (context, index) => const SizedBox(height: 8),
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 8),
                   itemBuilder: (context, index) {
                     final thought = bookController.thoughtPosts[index];
                     final currentUser = FirebaseAuth.instance.currentUser;
                     final isOwner = currentUser?.uid == thought.userId;
-                    final isLiked = currentUser != null && 
+                    final isLiked = currentUser != null &&
                         thought.likedBy.contains(currentUser.uid);
-                    
+
                     return _buildThoughtCard(
-                      context, 
-                      thought, 
+                      context,
+                      thought,
                       isOwner,
                       isLiked,
                       currentUser?.uid,
@@ -110,8 +110,8 @@ class _ThoughtsPageState extends State<ThoughtsPage> {
   }
 
   Widget _buildThoughtCard(
-    BuildContext context, 
-    ThoughtPost thought, 
+    BuildContext context,
+    ThoughtPost thought,
     bool isOwner,
     bool isLiked,
     String? userId,
@@ -131,10 +131,10 @@ class _ThoughtsPageState extends State<ThoughtsPage> {
               children: [
                 CircleAvatar(
                   radius: 20,
-                  backgroundImage: thought.userPhoto != null 
-                      ? NetworkImage(thought.userPhoto!) 
+                  backgroundImage: thought.userPhoto != null
+                      ? NetworkImage(thought.userPhoto!)
                       : null,
-                  child: thought.userPhoto == null 
+                  child: thought.userPhoto == null
                       ? const Icon(Icons.person_outline, size: 20)
                       : null,
                 ),
@@ -152,7 +152,8 @@ class _ThoughtsPageState extends State<ThoughtsPage> {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        DateFormat('MMM d, y • h:mm a').format(thought.timestamp),
+                        DateFormat('MMM d, y • h:mm a')
+                            .format(thought.timestamp),
                         style: TextStyle(
                           color: Colors.grey.shade600,
                           fontSize: 12,
@@ -163,10 +164,11 @@ class _ThoughtsPageState extends State<ThoughtsPage> {
                 ),
                 if (isOwner)
                   IconButton(
-                    icon: Icon(Icons.delete_outline, 
-                      color: Colors.grey.shade500),
+                    icon:
+                        Icon(Icons.delete_outline, color: Colors.grey.shade500),
                     iconSize: 20,
-                    onPressed: () => _showDeleteConfirmation(context, thought.id),
+                    onPressed: () =>
+                        _showDeleteConfirmation(context, thought.id),
                   ),
               ],
             ),
@@ -180,7 +182,7 @@ class _ThoughtsPageState extends State<ThoughtsPage> {
               children: [
                 IconButton(
                   icon: Icon(
-                    isLiked ? Icons.favorite : Icons.favorite_border, 
+                    isLiked ? Icons.favorite : Icons.favorite_border,
                     color: isLiked ? Colors.red : Colors.grey.shade600,
                     size: 20,
                   ),
@@ -193,7 +195,7 @@ class _ThoughtsPageState extends State<ThoughtsPage> {
                       );
                       return;
                     }
-                    
+
                     if (isLiked) {
                       bookController.unlikeThought(thought.id, userId);
                     } else {
@@ -210,7 +212,8 @@ class _ThoughtsPageState extends State<ThoughtsPage> {
                 ),
                 const Spacer(),
                 IconButton(
-                  icon: Icon(Icons.share_outlined, 
+                  icon: Icon(
+                    Icons.share_outlined,
                     color: Colors.grey.shade600,
                     size: 20,
                   ),
@@ -236,12 +239,14 @@ class _ThoughtsPageState extends State<ThoughtsPage> {
     );
   }
 
-  Future<void> _showDeleteConfirmation(BuildContext context, String thoughtId) async {
+  Future<void> _showDeleteConfirmation(
+      BuildContext context, String thoughtId) async {
     final result = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Thought'),
-        content: const Text('Are you sure you want to delete this thought? This action cannot be undone.'),
+        content: const Text(
+            'Are you sure you want to delete this thought? This action cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -257,7 +262,7 @@ class _ThoughtsPageState extends State<ThoughtsPage> {
         ],
       ),
     );
-    
+
     if (result == true) {
       await bookController.deleteThought(thoughtId);
     }
@@ -275,7 +280,7 @@ class _ThoughtsPageState extends State<ThoughtsPage> {
     }
 
     final textController = TextEditingController();
-    
+
     showDialog(
       context: context,
       builder: (context) {
@@ -336,7 +341,7 @@ class _ThoughtsPageState extends State<ThoughtsPage> {
                   );
                   return;
                 }
-                
+
                 bookController.thoughtController.text = text;
                 bookController.postThought(
                   user.uid,

@@ -18,25 +18,29 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     OnboardingPage(
       icon: Icons.library_books_rounded,
       title: 'Discover Amazing Books',
-      description: 'Explore thousands of books across different genres and find your next favorite read.',
+      description:
+          'Explore thousands of books across different genres and find your next favorite read.',
       color: const Color(0xFF4E6EFF),
     ),
     OnboardingPage(
       icon: Icons.bookmark_rounded,
       title: 'Save Your Progress',
-      description: 'Bookmark your favorite books and never lose track of where you left off.',
+      description:
+          'Bookmark your favorite books and never lose track of where you left off.',
       color: const Color(0xFF00C896),
     ),
     OnboardingPage(
       icon: Icons.share_rounded,
       title: 'Share & Connect',
-      description: 'Share your favorite books with friends and discover what others are reading.',
+      description:
+          'Share your favorite books with friends and discover what others are reading.',
       color: const Color(0xFFFF6B6B),
     ),
     OnboardingPage(
       icon: Icons.auto_stories_rounded,
       title: 'Read Anywhere',
-      description: 'Access your library from any device and continue reading seamlessly.',
+      description:
+          'Access your library from any device and continue reading seamlessly.',
       color: const Color(0xFF9C27B0),
     ),
   ];
@@ -71,7 +75,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    
+
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -94,7 +98,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ),
             ),
-            
+
             // Page View
             Expanded(
               child: PageView.builder(
@@ -110,7 +114,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 },
               ),
             ),
-            
+
             // Page Indicators
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 20.0),
@@ -133,7 +137,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ),
             ),
-            
+
             // Navigation Buttons
             Padding(
               padding: const EdgeInsets.all(24.0),
@@ -162,7 +166,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     )
                   else
                     const SizedBox(width: 80),
-                  
+
                   // Next/Get Started Button
                   FilledButton(
                     onPressed: _nextPage,
@@ -176,7 +180,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       ),
                     ),
                     child: Text(
-                      _currentPage == _pages.length - 1 ? 'Get Started' : 'Next',
+                      _currentPage == _pages.length - 1
+                          ? 'Get Started'
+                          : 'Next',
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -201,7 +207,7 @@ class _OnboardingPageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    
+
     return Padding(
       padding: const EdgeInsets.all(32.0),
       child: Column(
@@ -221,28 +227,28 @@ class _OnboardingPageWidget extends StatelessWidget {
               color: page.color,
             ),
           ),
-          
+
           const SizedBox(height: 48),
-          
+
           // Title
           Text(
             page.title,
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: colorScheme.onSurface,
-            ),
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.onSurface,
+                ),
             textAlign: TextAlign.center,
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Description
           Text(
             page.description,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: colorScheme.onSurface.withOpacity(0.7),
-              height: 1.5,
-            ),
+                  color: colorScheme.onSurface.withOpacity(0.7),
+                  height: 1.5,
+                ),
             textAlign: TextAlign.center,
           ),
         ],

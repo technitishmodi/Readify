@@ -29,7 +29,7 @@ class _ListeningScreenState extends State<ListeningScreen>
   final TtsController ttsController = Get.put(TtsController());
   late AnimationController _animationController;
   late Animation<double> _pulseAnimation;
-  
+
   String extractedText = '';
   bool isLoading = true;
   bool isExtracting = false;
@@ -44,7 +44,7 @@ class _ListeningScreenState extends State<ListeningScreen>
       duration: const Duration(seconds: 2),
       vsync: this,
     )..repeat(reverse: true);
-    
+
     _pulseAnimation = Tween<double>(
       begin: 0.8,
       end: 1.2,
@@ -52,7 +52,7 @@ class _ListeningScreenState extends State<ListeningScreen>
       parent: _animationController,
       curve: Curves.easeInOut,
     ));
-    
+
     _extractTextFromPdf();
   }
 
@@ -84,24 +84,26 @@ class _ListeningScreenState extends State<ListeningScreen>
       // Extract text from all pages
       for (int i = 0; i < totalPages; i++) {
         final PdfTextExtractor extractor = PdfTextExtractor(document);
-        final String pageText = extractor.extractText(startPageIndex: i, endPageIndex: i);
+        final String pageText =
+            extractor.extractText(startPageIndex: i, endPageIndex: i);
         pageTexts.add(pageText.trim());
       }
 
       // Combine all text
       extractedText = pageTexts.join('\n\n');
-      
+
       // Clean up the text
       extractedText = _cleanText(extractedText);
-      
+
       document.dispose();
 
       if (extractedText.isEmpty) {
-        extractedText = "Sorry, no readable text could be extracted from this PDF. The PDF might contain only images or have text in a format that cannot be processed.";
+        extractedText =
+            "Sorry, no readable text could be extracted from this PDF. The PDF might contain only images or have text in a format that cannot be processed.";
       }
-
     } catch (e) {
-      extractedText = "Error extracting text from PDF: ${e.toString()}. Please try again or check if the PDF is accessible.";
+      extractedText =
+          "Error extracting text from PDF: ${e.toString()}. Please try again or check if the PDF is accessible.";
     } finally {
       setState(() {
         isLoading = false;
@@ -119,20 +121,12 @@ class _ListeningScreenState extends State<ListeningScreen>
   }
 
   void _playCurrentPage() async {
-    print("=== DEBUG: _playCurrentPage called ===");
-    print("Current page: $currentPage");
-    print("Page texts length: ${pageTexts.length}");
-    
     if (currentPage < pageTexts.length) {
       String pageText = pageTexts[currentPage];
-      print("Page text length: ${pageText.length}");
-      print("Page text preview: ${pageText.substring(0, pageText.length > 100 ? 100 : pageText.length)}");
-      
       if (pageText.isNotEmpty) {
         await ttsController.speak(pageText);
         ttsController.update(['playing_state', 'controls', 'text_overlay']);
       } else {
-        print("ERROR: Current page text is empty");
         Get.snackbar(
           'No Text',
           'This page has no readable text.',
@@ -140,21 +134,14 @@ class _ListeningScreenState extends State<ListeningScreen>
           duration: Duration(seconds: 2),
         );
       }
-    } else {
-      print("ERROR: Current page index out of bounds");
     }
   }
 
   void _playAllText() async {
-    print("=== DEBUG: _playAllText called ===");
-    print("Extracted text length: ${extractedText.length}");
-    print("Extracted text preview: ${extractedText.substring(0, extractedText.length > 100 ? 100 : extractedText.length)}");
-    
     if (extractedText.isNotEmpty) {
       await ttsController.speak(extractedText);
       ttsController.update(['playing_state', 'controls', 'text_overlay']);
     } else {
-      print("ERROR: No extracted text to play");
       Get.snackbar(
         'No Text',
         'No text available to read aloud.',
@@ -253,7 +240,9 @@ class _ListeningScreenState extends State<ListeningScreen>
                 : SingleChildScrollView(
                     child: ConstrainedBox(
                       constraints: BoxConstraints(
-                        minHeight: screenSize.height - kToolbarHeight - MediaQuery.of(context).padding.top,
+                        minHeight: screenSize.height -
+                            kToolbarHeight -
+                            MediaQuery.of(context).padding.top,
                       ),
                       child: Column(
                         children: [
@@ -270,28 +259,36 @@ class _ListeningScreenState extends State<ListeningScreen>
                                       animation: _pulseAnimation,
                                       builder: (context, child) {
                                         return Transform.scale(
-                                          scale: controller.isPlaying.value ? _pulseAnimation.value : 1.0,
+                                          scale: controller.isPlaying.value
+                                              ? _pulseAnimation.value
+                                              : 1.0,
                                           child: Container(
                                             height: screenSize.height * 0.2,
                                             width: screenSize.width * 0.35,
                                             decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(16),
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
                                               boxShadow: [
                                                 BoxShadow(
-                                                  color: colorScheme.primary.withOpacity(0.3),
+                                                  color: colorScheme.primary
+                                                      .withOpacity(0.3),
                                                   blurRadius: 20,
                                                   spreadRadius: 2,
                                                 ),
                                               ],
                                             ),
                                             child: ClipRRect(
-                                              borderRadius: BorderRadius.circular(16),
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
                                               child: Image.network(
                                                 widget.coverImageUrl,
                                                 fit: BoxFit.cover,
-                                                errorBuilder: (_, __, ___) => Container(
-                                                  color: colorScheme.surfaceContainerHighest,
-                                                  child: const Icon(Icons.book, size: 40),
+                                                errorBuilder: (_, __, ___) =>
+                                                    Container(
+                                                  color: colorScheme
+                                                      .surfaceContainerHighest,
+                                                  child: const Icon(Icons.book,
+                                                      size: 40),
                                                 ),
                                               ),
                                             ),
@@ -301,16 +298,17 @@ class _ListeningScreenState extends State<ListeningScreen>
                                     ),
                                   ),
                                 ),
-                                
+
                                 const SizedBox(height: 16),
-                                
+
                                 // Book title and author
                                 Text(
                                   widget.bookTitle,
                                   textAlign: TextAlign.center,
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
-                                  style: theme.textTheme.headlineSmall?.copyWith(
+                                  style:
+                                      theme.textTheme.headlineSmall?.copyWith(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 20,
@@ -336,7 +334,8 @@ class _ListeningScreenState extends State<ListeningScreen>
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(20),
                               child: BackdropFilter(
-                                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                                filter:
+                                    ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                                 child: Container(
                                   padding: const EdgeInsets.all(16),
                                   decoration: BoxDecoration(
@@ -353,21 +352,33 @@ class _ListeningScreenState extends State<ListeningScreen>
                                           builder: (controller) => Column(
                                             children: [
                                               LinearProgressIndicator(
-                                                value: controller.progressPercentage,
+                                                value: controller
+                                                    .progressPercentage,
                                                 backgroundColor: Colors.white24,
-                                                valueColor: AlwaysStoppedAnimation<Color>(colorScheme.primary),
+                                                valueColor:
+                                                    AlwaysStoppedAnimation<
+                                                            Color>(
+                                                        colorScheme.primary),
                                               ),
                                               const SizedBox(height: 8),
                                               Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
                                                 children: [
                                                   Text(
-                                                    controller.currentTimeFormatted,
-                                                    style: TextStyle(color: Colors.white70, fontSize: 12),
+                                                    controller
+                                                        .currentTimeFormatted,
+                                                    style: TextStyle(
+                                                        color: Colors.white70,
+                                                        fontSize: 12),
                                                   ),
                                                   Text(
-                                                    controller.totalTimeFormatted,
-                                                    style: TextStyle(color: Colors.white70, fontSize: 12),
+                                                    controller
+                                                        .totalTimeFormatted,
+                                                    style: TextStyle(
+                                                        color: Colors.white70,
+                                                        fontSize: 12),
                                                   ),
                                                 ],
                                               ),
@@ -381,13 +392,18 @@ class _ListeningScreenState extends State<ListeningScreen>
                                       // Page navigation
                                       if (totalPages > 0) ...[
                                         Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
                                           children: [
                                             IconButton(
-                                              onPressed: currentPage > 0 ? _previousPage : null,
+                                              onPressed: currentPage > 0
+                                                  ? _previousPage
+                                                  : null,
                                               icon: Icon(
                                                 Icons.skip_previous,
-                                                color: currentPage > 0 ? Colors.white : Colors.white38,
+                                                color: currentPage > 0
+                                                    ? Colors.white
+                                                    : Colors.white38,
                                                 size: 28,
                                               ),
                                             ),
@@ -399,28 +415,44 @@ class _ListeningScreenState extends State<ListeningScreen>
                                                     style: TextStyle(
                                                       color: Colors.white,
                                                       fontSize: 14,
-                                                      fontWeight: FontWeight.w500,
+                                                      fontWeight:
+                                                          FontWeight.w500,
                                                     ),
                                                   ),
                                                   const SizedBox(height: 6),
                                                   ElevatedButton(
                                                     onPressed: _playCurrentPage,
-                                                    style: ElevatedButton.styleFrom(
-                                                      backgroundColor: colorScheme.secondary,
-                                                      foregroundColor: Colors.white,
-                                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                                      minimumSize: const Size(120, 36),
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      backgroundColor:
+                                                          colorScheme.secondary,
+                                                      foregroundColor:
+                                                          Colors.white,
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 16,
+                                                          vertical: 8),
+                                                      minimumSize:
+                                                          const Size(120, 36),
                                                     ),
-                                                    child: Text('Play Page', style: TextStyle(fontSize: 12)),
+                                                    child: Text('Play Page',
+                                                        style: TextStyle(
+                                                            fontSize: 12)),
                                                   ),
                                                 ],
                                               ),
                                             ),
                                             IconButton(
-                                              onPressed: currentPage < totalPages - 1 ? _nextPage : null,
+                                              onPressed:
+                                                  currentPage < totalPages - 1
+                                                      ? _nextPage
+                                                      : null,
                                               icon: Icon(
                                                 Icons.skip_next,
-                                                color: currentPage < totalPages - 1 ? Colors.white : Colors.white38,
+                                                color:
+                                                    currentPage < totalPages - 1
+                                                        ? Colors.white
+                                                        : Colors.white38,
                                                 size: 28,
                                               ),
                                             ),
@@ -431,63 +463,74 @@ class _ListeningScreenState extends State<ListeningScreen>
 
                                       // Main playback controls
                                       Obx(() => Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          IconButton(
-                                            onPressed: () => ttsController.stop(),
-                                            icon: Icon(
-                                              Icons.stop,
-                                              color: Colors.white,
-                                              size: 28,
-                                            ),
-                                          ),
-                                          GestureDetector(
-                                            onTap: () {
-                                              if (ttsController.isPlaying.value) {
-                                                ttsController.pause();
-                                              } else if (ttsController.isPaused.value) {
-                                                ttsController.resume();
-                                              } else {
-                                                _playAllText();
-                                              }
-                                            },
-                                            child: Container(
-                                              width: 64,
-                                              height: 64,
-                                              decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                gradient: LinearGradient(
-                                                  colors: [colorScheme.primary, colorScheme.secondary],
-                                                  begin: Alignment.topLeft,
-                                                  end: Alignment.bottomRight,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              IconButton(
+                                                onPressed: () =>
+                                                    ttsController.stop(),
+                                                icon: Icon(
+                                                  Icons.stop,
+                                                  color: Colors.white,
+                                                  size: 28,
                                                 ),
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: colorScheme.primary.withOpacity(0.4),
-                                                    blurRadius: 16,
-                                                    spreadRadius: 1,
+                                              ),
+                                              GestureDetector(
+                                                onTap: () {
+                                                  if (ttsController
+                                                      .isPlaying.value) {
+                                                    ttsController.pause();
+                                                  } else if (ttsController
+                                                      .isPaused.value) {
+                                                    ttsController.resume();
+                                                  } else {
+                                                    _playAllText();
+                                                  }
+                                                },
+                                                child: Container(
+                                                  width: 64,
+                                                  height: 64,
+                                                  decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    gradient: LinearGradient(
+                                                      colors: [
+                                                        colorScheme.primary,
+                                                        colorScheme.secondary
+                                                      ],
+                                                      begin: Alignment.topLeft,
+                                                      end:
+                                                          Alignment.bottomRight,
+                                                    ),
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                        color: colorScheme
+                                                            .primary
+                                                            .withOpacity(0.4),
+                                                        blurRadius: 16,
+                                                        spreadRadius: 1,
+                                                      ),
+                                                    ],
                                                   ),
-                                                ],
+                                                  child: Icon(
+                                                    ttsController
+                                                            .isPlaying.value
+                                                        ? Icons.pause
+                                                        : Icons.play_arrow,
+                                                    color: Colors.white,
+                                                    size: 32,
+                                                  ),
+                                                ),
                                               ),
-                                              child: Icon(
-                                                ttsController.isPlaying.value
-                                                    ? Icons.pause
-                                                    : Icons.play_arrow,
-                                                color: Colors.white,
-                                                size: 32,
+                                              IconButton(
+                                                onPressed: _playAllText,
+                                                icon: Icon(
+                                                  Icons.replay,
+                                                  color: Colors.white,
+                                                  size: 28,
+                                                ),
                                               ),
-                                            ),
-                                          ),
-                                          IconButton(
-                                            onPressed: _playAllText,
-                                            icon: Icon(
-                                              Icons.replay,
-                                              color: Colors.white,
-                                              size: 28,
-                                            ),
-                                          ),
-                                        ],
-                                      )),
+                                            ],
+                                          )),
 
                                       const SizedBox(height: 20),
 
@@ -499,22 +542,32 @@ class _ListeningScreenState extends State<ListeningScreen>
                                             children: [
                                               Text(
                                                 'Speed: ${controller.speechRate.value.toStringAsFixed(1)}x',
-                                                style: TextStyle(color: Colors.white, fontSize: 14),
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 14),
                                               ),
                                               const SizedBox(height: 8),
                                               SliderTheme(
-                                                data: SliderTheme.of(context).copyWith(
+                                                data: SliderTheme.of(context)
+                                                    .copyWith(
                                                   trackHeight: 3,
-                                                  thumbShape: RoundSliderThumbShape(enabledThumbRadius: 8),
+                                                  thumbShape:
+                                                      RoundSliderThumbShape(
+                                                          enabledThumbRadius:
+                                                              8),
                                                 ),
                                                 child: Slider(
-                                                  value: controller.speechRate.value,
+                                                  value: controller
+                                                      .speechRate.value,
                                                   min: 0.1,
                                                   max: 2.0,
                                                   divisions: 19,
-                                                  activeColor: colorScheme.primary,
+                                                  activeColor:
+                                                      colorScheme.primary,
                                                   inactiveColor: Colors.white24,
-                                                  onChanged: (value) => controller.setSpeechRate(value),
+                                                  onChanged: (value) =>
+                                                      controller
+                                                          .setSpeechRate(value),
                                                 ),
                                               ),
                                             ],
@@ -527,7 +580,7 @@ class _ListeningScreenState extends State<ListeningScreen>
                               ),
                             ),
                           ),
-                          
+
                           // Bottom padding
                           const SizedBox(height: 150),
                         ],
@@ -543,10 +596,11 @@ class _ListeningScreenState extends State<ListeningScreen>
             right: 0,
             child: RepaintBoundary(
               child: Obx(() {
-                if (!ttsController.isPlaying.value || ttsController.currentSpeakingText.value.isEmpty) {
+                if (!ttsController.isPlaying.value ||
+                    ttsController.currentSpeakingText.value.isEmpty) {
                   return SizedBox.shrink();
                 }
-                
+
                 return GetBuilder<TtsController>(
                   id: 'text_overlay',
                   builder: (controller) => Container(
@@ -573,7 +627,7 @@ class _ListeningScreenState extends State<ListeningScreen>
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              controller.isPlayingChunks.value 
+                              controller.isPlayingChunks.value
                                   ? 'Speaking (${controller.currentChunkIndex.value + 1}/${controller.textChunks.length})'
                                   : 'Speaking',
                               style: TextStyle(
@@ -585,8 +639,10 @@ class _ListeningScreenState extends State<ListeningScreen>
                             Spacer(),
                             IconButton(
                               onPressed: () => controller.stop(),
-                              icon: Icon(Icons.close, color: Colors.white70, size: 18),
-                              constraints: BoxConstraints(minWidth: 32, minHeight: 32),
+                              icon: Icon(Icons.close,
+                                  color: Colors.white70, size: 18),
+                              constraints:
+                                  BoxConstraints(minWidth: 32, minHeight: 32),
                             ),
                           ],
                         ),
@@ -656,29 +712,31 @@ class _ListeningScreenState extends State<ListeningScreen>
             children: [
               // Volume control
               Obx(() => Column(
-                children: [
-                  Text('Volume: ${(ttsController.speechVolume.value * 100).round()}%'),
-                  Slider(
-                    value: ttsController.speechVolume.value,
-                    min: 0.0,
-                    max: 1.0,
-                    onChanged: (value) => ttsController.setVolume(value),
-                  ),
-                ],
-              )),
-              
+                    children: [
+                      Text(
+                          'Volume: ${(ttsController.speechVolume.value * 100).round()}%'),
+                      Slider(
+                        value: ttsController.speechVolume.value,
+                        min: 0.0,
+                        max: 1.0,
+                        onChanged: (value) => ttsController.setVolume(value),
+                      ),
+                    ],
+                  )),
+
               // Pitch control
               Obx(() => Column(
-                children: [
-                  Text('Pitch: ${ttsController.speechPitch.value.toStringAsFixed(1)}'),
-                  Slider(
-                    value: ttsController.speechPitch.value,
-                    min: 0.5,
-                    max: 2.0,
-                    onChanged: (value) => ttsController.setPitch(value),
-                  ),
-                ],
-              )),
+                    children: [
+                      Text(
+                          'Pitch: ${ttsController.speechPitch.value.toStringAsFixed(1)}'),
+                      Slider(
+                        value: ttsController.speechPitch.value,
+                        min: 0.5,
+                        max: 2.0,
+                        onChanged: (value) => ttsController.setPitch(value),
+                      ),
+                    ],
+                  )),
 
               // Language selection
               Obx(() => ttsController.availableLanguages.isNotEmpty

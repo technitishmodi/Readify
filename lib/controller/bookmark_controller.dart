@@ -7,11 +7,11 @@ import 'package:Readify/models/bookmodel.dart';
 class BookmarkController extends GetxController {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  
+
   // Observable list of bookmarked books
   final RxList<Bookmodel> bookmarkedBooks = <Bookmodel>[].obs;
   final RxBool isLoading = false.obs;
-  
+
   @override
   void onInit() {
     super.onInit();

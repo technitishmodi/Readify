@@ -59,7 +59,8 @@ class AIInsightsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPersonalityCard(AIInsightsController controller, ColorScheme colorScheme) {
+  Widget _buildPersonalityCard(
+      AIInsightsController controller, ColorScheme colorScheme) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -95,15 +96,15 @@ class AIInsightsScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Obx(() => Text(
-                        controller.readingPersonality.value.isEmpty 
-                            ? 'Analyzing...' 
-                            : controller.readingPersonality.value,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: colorScheme.primary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      )),
+                            controller.readingPersonality.value.isEmpty
+                                ? 'Analyzing...'
+                                : controller.readingPersonality.value,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: colorScheme.primary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          )),
                     ],
                   ),
                 ),
@@ -111,26 +112,26 @@ class AIInsightsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Obx(() => Row(
-              children: [
-                Expanded(
-                  child: _StatChip(
-                    label: 'Books Analyzed',
-                    value: controller.totalBooksAnalyzed.value.toString(),
-                    color: Colors.blue,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: _StatChip(
-                    label: 'Reading Mood',
-                    value: controller.readingMood.value.isEmpty 
-                        ? 'Analyzing' 
-                        : controller.readingMood.value,
-                    color: Colors.green,
-                  ),
-                ),
-              ],
-            )),
+                  children: [
+                    Expanded(
+                      child: _StatChip(
+                        label: 'Books Analyzed',
+                        value: controller.totalBooksAnalyzed.value.toString(),
+                        color: Colors.blue,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _StatChip(
+                        label: 'Reading Mood',
+                        value: controller.readingMood.value.isEmpty
+                            ? 'Analyzing'
+                            : controller.readingMood.value,
+                        color: Colors.green,
+                      ),
+                    ),
+                  ],
+                )),
             const SizedBox(height: 12),
             Obx(() {
               if (controller.preferredGenres.isEmpty) {
@@ -139,14 +140,16 @@ class AIInsightsScreen extends StatelessWidget {
               return Wrap(
                 spacing: 8,
                 runSpacing: 4,
-                children: controller.preferredGenres.map((genre) => Chip(
-                  label: Text(genre),
-                  backgroundColor: colorScheme.secondaryContainer,
-                  labelStyle: TextStyle(
-                    color: colorScheme.onSecondaryContainer,
-                    fontSize: 12,
-                  ),
-                )).toList(),
+                children: controller.preferredGenres
+                    .map((genre) => Chip(
+                          label: Text(genre),
+                          backgroundColor: colorScheme.secondaryContainer,
+                          labelStyle: TextStyle(
+                            color: colorScheme.onSecondaryContainer,
+                            fontSize: 12,
+                          ),
+                        ))
+                    .toList(),
               );
             }),
           ],
@@ -155,7 +158,8 @@ class AIInsightsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildInsightsList(AIInsightsController controller, ColorScheme colorScheme) {
+  Widget _buildInsightsList(
+      AIInsightsController controller, ColorScheme colorScheme) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -199,7 +203,8 @@ class AIInsightsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildRecommendations(AIInsightsController controller, ColorScheme colorScheme) {
+  Widget _buildRecommendations(
+      AIInsightsController controller, ColorScheme colorScheme) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -236,7 +241,7 @@ class AIInsightsScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               final recommendation = controller.recommendations[index];
               return _RecommendationCard(
-                recommendation: recommendation, 
+                recommendation: recommendation,
                 colorScheme: colorScheme,
               );
             },

@@ -76,10 +76,10 @@ class _SplashScreenState extends State<SplashScreen>
         Get.offAll(() => const OnboardingScreen());
       } else if (user != null) {
         Get.offAll(() => HomePage(
-          userName: user.displayName ?? 'User',
-          userEmail: user.email ?? '',
-          userPhoto: user.photoURL,
-        ));
+              userName: user.displayName ?? 'User',
+              userEmail: user.email ?? '',
+              userPhoto: user.photoURL,
+            ));
       } else {
         Get.offAll(() => const SignupScreen());
       }
@@ -218,15 +218,16 @@ class _SplashScreenState extends State<SplashScreen>
                             animation: _textController,
                             builder: (context, child) {
                               return Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 4),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 4),
                                 child: Transform.scale(
                                   scale: 1 +
                                       (0.3 *
                                           (1 -
                                               ((index * 0.3 -
-                                                          _textController.value)
-                                                      .abs()
-                                                      .clamp(0.0, 1.0)))),
+                                                      _textController.value)
+                                                  .abs()
+                                                  .clamp(0.0, 1.0)))),
                                   child: Container(
                                     width: 8,
                                     height: 8,
