@@ -111,7 +111,7 @@ class _ProfilepageState extends State<Profilepage>
         child: const Icon(Icons.add, color: Colors.white),
       ),
       body: Obx(() {
-        if (widget.bookController.isUserBooksLoading.value || 
+        if (widget.bookController.isUserBooksLoading.value ||
             bookmarkController.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
         }
@@ -141,7 +141,8 @@ class _ProfilepageState extends State<Profilepage>
                           // Back Button
                           IconButton(
                             onPressed: () => Get.back(),
-                            icon: const Icon(Icons.arrow_back, color: Colors.white),
+                            icon: const Icon(Icons.arrow_back,
+                                color: Colors.white),
                           ),
                           const Spacer(),
                           // Settings Button
@@ -149,11 +150,12 @@ class _ProfilepageState extends State<Profilepage>
                             onPressed: () {
                               // Add settings navigation if needed
                             },
-                            icon: const Icon(Icons.settings, color: Colors.white),
+                            icon:
+                                const Icon(Icons.settings, color: Colors.white),
                           ),
                         ],
                       ),
-                      
+
                       // Avatar
                       Container(
                         decoration: BoxDecoration(
@@ -176,15 +178,16 @@ class _ProfilepageState extends State<Profilepage>
                                 ? Image.network(
                                     widget.userPhoto!,
                                     fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) =>
-                                        _buildDefaultAvatar(),
+                                    errorBuilder:
+                                        (context, error, stackTrace) =>
+                                            _buildDefaultAvatar(),
                                   )
                                 : _buildDefaultAvatar(),
                           ),
                         ),
                       ),
                       const SizedBox(height: 12),
-                      
+
                       // User Info
                       Text(
                         widget.userName,
@@ -209,7 +212,7 @@ class _ProfilepageState extends State<Profilepage>
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 12),
-                      
+
                       // Stats Row
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -221,17 +224,18 @@ class _ProfilepageState extends State<Profilepage>
                           ),
                           _buildStatCard(
                             'Bookmarks',
-                            bookmarkController.bookmarkedBooks.length.toString(),
+                            bookmarkController.bookmarkedBooks.length
+                                .toString(),
                             Icons.bookmark,
                           ),
                         ],
                       ),
                       const SizedBox(height: 12),
-                      
+
                       // Sign Out Button
                       _buildSignOutButton(),
                       const SizedBox(height: 16),
-                      
+
                       // Tab Bar
                       Container(
                         decoration: BoxDecoration(
@@ -265,7 +269,7 @@ class _ProfilepageState extends State<Profilepage>
                 ),
               ),
             ),
-            
+
             // Scrollable Tab Content
             Expanded(
               child: TabBarView(
@@ -309,7 +313,8 @@ class _ProfilepageState extends State<Profilepage>
           ? _buildEmptyState(
               icon: Icons.bookmark_border,
               title: 'No Bookmarks Yet',
-              subtitle: 'Save books you want to read later by tapping the bookmark icon!',
+              subtitle:
+                  'Save books you want to read later by tapping the bookmark icon!',
             )
           : ListView.separated(
               itemCount: bookmarkController.bookmarkedBooks.length,
@@ -327,16 +332,16 @@ class _ProfilepageState extends State<Profilepage>
       borderRadius: BorderRadius.circular(16),
       onTap: () {
         Get.to(() => Bookdetail(
-          bookId: book.id ?? '',
-          title: book.title ?? 'No Title',
-          author: book.auther ?? 'Unknown Author',
-          description: book.descriptions ?? '',
-          aboutAuthor: book.aboutAuthor ?? '',
-          imageUrl: book.imageUrl ?? '',
-          coverUrl: book.bookUrl ?? '',
-          rating: double.tryParse(book.ratings ?? '0') ?? 0.0,
-          category: book.category ?? 'General',
-        ));
+              bookId: book.id ?? '',
+              title: book.title ?? 'No Title',
+              author: book.auther ?? 'Unknown Author',
+              description: book.descriptions ?? '',
+              aboutAuthor: book.aboutAuthor ?? '',
+              imageUrl: book.imageUrl ?? '',
+              coverUrl: book.bookUrl ?? '',
+              rating: double.tryParse(book.ratings ?? '0') ?? 0.0,
+              category: book.category ?? 'General',
+            ));
       },
       child: Container(
         decoration: BoxDecoration(
@@ -381,7 +386,8 @@ class _ProfilepageState extends State<Profilepage>
                                 height: 20,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  value: loadingProgress.expectedTotalBytes != null
+                                  value: loadingProgress.expectedTotalBytes !=
+                                          null
                                       ? loadingProgress.cumulativeBytesLoaded /
                                           loadingProgress.expectedTotalBytes!
                                       : null,
@@ -393,7 +399,8 @@ class _ProfilepageState extends State<Profilepage>
                         errorBuilder: (context, error, stackTrace) => Container(
                           color: Colors.grey[300],
                           child: const Center(
-                            child: Icon(Icons.book, size: 30, color: Colors.grey),
+                            child:
+                                Icon(Icons.book, size: 30, color: Colors.grey),
                           ),
                         ),
                       ),
@@ -438,11 +445,12 @@ class _ProfilepageState extends State<Profilepage>
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     const Icon(Icons.star,
-                                      color: Colors.amber,
-                                      size: 16),
+                                        color: Colors.amber, size: 16),
                                     const SizedBox(width: 4),
                                     Text(
-                                      (double.tryParse(book.ratings ?? '0')?.toStringAsFixed(1)) ?? '0.0',
+                                      (double.tryParse(book.ratings ?? '0')
+                                              ?.toStringAsFixed(1)) ??
+                                          '0.0',
                                       style: const TextStyle(
                                         fontWeight: FontWeight.w600,
                                         fontSize: 13,
@@ -454,9 +462,10 @@ class _ProfilepageState extends State<Profilepage>
                             const Spacer(),
                             if (!isUserBook)
                               IconButton(
-                                icon: const Icon(Icons.bookmark_remove, 
-                                  color: Colors.red, size: 20),
-                                onPressed: () => bookmarkController.removeBookmark(book.id ?? ''),
+                                icon: const Icon(Icons.bookmark_remove,
+                                    color: Colors.red, size: 20),
+                                onPressed: () => bookmarkController
+                                    .removeBookmark(book.id ?? ''),
                                 tooltip: 'Remove Bookmark',
                               ),
                           ],
@@ -477,7 +486,8 @@ class _ProfilepageState extends State<Profilepage>
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: PopupMenuButton<String>(
-                    icon: const Icon(Icons.more_vert, color: Colors.white, size: 18),
+                    icon: const Icon(Icons.more_vert,
+                        color: Colors.white, size: 18),
                     onSelected: (value) {
                       if (value == 'edit') {
                         _showEditDialog(book);
@@ -639,8 +649,10 @@ class _ProfilepageState extends State<Profilepage>
   void _showEditDialog(dynamic book) {
     final titleController = TextEditingController(text: book.title ?? '');
     final authorController = TextEditingController(text: book.auther ?? '');
-    final descriptionController = TextEditingController(text: book.descriptions ?? '');
-    final aboutAuthorController = TextEditingController(text: book.aboutAuthor ?? '');
+    final descriptionController =
+        TextEditingController(text: book.descriptions ?? '');
+    final aboutAuthorController =
+        TextEditingController(text: book.aboutAuthor ?? '');
     final categoryController = TextEditingController(text: book.category ?? '');
     final ratingsController = TextEditingController(text: book.ratings ?? '');
 
@@ -720,7 +732,7 @@ class _ProfilepageState extends State<Profilepage>
                   newDescription: descriptionController.text.trim(),
                   newAboutAuthor: aboutAuthorController.text.trim(),
                 );
-                
+
                 Get.back();
                 Get.snackbar(
                   'Success',
@@ -792,7 +804,8 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   double get maxExtent => _tabBar.preferredSize.height;
 
   @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
     return _tabBar;
   }
 

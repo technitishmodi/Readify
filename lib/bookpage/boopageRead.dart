@@ -344,7 +344,7 @@ class _BoopagereadState extends State<Boopageread> {
                 width: 100,
                 child: LinearProgressIndicator(
                   value: currentPage / totalPages,
-                  backgroundColor: theme.colorScheme.surfaceVariant,
+                  backgroundColor: theme.colorScheme.surfaceContainerHighest,
                   valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
                 ),
               ),

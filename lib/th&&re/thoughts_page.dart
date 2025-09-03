@@ -5,14 +5,25 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-class ThoughtsPage extends StatelessWidget {
+class ThoughtsPage extends StatefulWidget {
+  @override
+  State<ThoughtsPage> createState() => _ThoughtsPageState();
+}
+
+class _ThoughtsPageState extends State<ThoughtsPage> {
   final BookController bookController = Get.find();
   final String inspirationalQuote = 
       "Your thoughts are more than words — they're sparks that inspire, "
       "connect, and shape a community of readers."
       "So share your thought freely";
 
-  ThoughtsPage({super.key});
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      bookController.fetchThoughts();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

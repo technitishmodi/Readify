@@ -96,22 +96,58 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   Future<void> _signOut() async {
-    try {
-      final bookController = Get.find<BookController>();
-      bookController.clearAllData();
-      
-      await FirebaseFirestore.instance.clearPersistence();
-      await GoogleSignIn().signOut();
-      await FirebaseAuth.instance.signOut();
-      
-      if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const SignupScreen()),
+    final result = await Get.dialog<bool>(
+      AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text(
+          "Sign Out",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        content: const Text("Are you sure you want to sign out?"),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(result: false),
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () => Get.back(result: true),
+            child: const Text(
+              "Sign Out",
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (result == true) {
+      try {
+        // Show loading indicator
+        Get.dialog(
+          const Center(child: CircularProgressIndicator()),
+          barrierDismissible: false,
         );
+
+        final bookController = Get.find<BookController>();
+        bookController.clearAllData();
+        
+        await FirebaseFirestore.instance.clearPersistence();
+        await GoogleSignIn().signOut();
+        await FirebaseAuth.instance.signOut();
+
+        // Close loading indicator
+        Get.back();
+
+        // Navigate to SignupScreen and clear navigation stack
+        Get.offAll(() => const SignupScreen());
+      } catch (e) {
+        // Close loading indicator if still open
+        if (Get.isDialogOpen ?? false) Get.back();
+        
+        _showErrorSnackBar('Failed to sign out. Please try again.');
       }
-    } catch (e) {
-      _showErrorSnackBar('Failed to sign out. Please try again.');
     }
   }
 

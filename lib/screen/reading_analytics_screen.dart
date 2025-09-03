@@ -255,7 +255,7 @@ class ReadingAnalyticsScreen extends StatelessWidget {
                       const SizedBox(height: 8),
                       LinearProgressIndicator(
                         value: controller.currentStreak.value / (controller.longestStreak.value + 1),
-                        backgroundColor: colorScheme.surfaceVariant,
+                        backgroundColor: colorScheme.surfaceContainerHighest,
                         valueColor: AlwaysStoppedAnimation<Color>(Colors.orange),
                       ),
                     ],

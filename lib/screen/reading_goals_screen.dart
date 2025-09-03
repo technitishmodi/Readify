@@ -195,7 +195,7 @@ class ReadingGoalsScreen extends StatelessWidget {
             const SizedBox(height: 16),
             LinearProgressIndicator(
               value: totalGoals > 0 ? completedGoals / totalGoals : 0,
-              backgroundColor: colorScheme.surfaceVariant,
+              backgroundColor: colorScheme.surfaceContainerHighest,
               valueColor: AlwaysStoppedAnimation<Color>(Colors.amber),
             ),
           ],
@@ -335,7 +335,7 @@ class _GoalTile extends StatelessWidget {
           const SizedBox(height: 4),
           LinearProgressIndicator(
             value: goal.progressPercent,
-            backgroundColor: colorScheme.surfaceVariant,
+            backgroundColor: colorScheme.surfaceContainerHighest,
             valueColor: AlwaysStoppedAnimation<Color>(progressColor),
           ),
         ],
