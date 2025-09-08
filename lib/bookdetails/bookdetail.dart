@@ -118,7 +118,7 @@ class _BookdetailState extends State<Bookdetail> with TickerProviderStateMixin {
                   isBookmarked
                       ? Icons.bookmark
                       : Icons.bookmark_border_outlined,
-                  color: isBookmarked ? Colors.amber : Colors.white,
+                  color: isBookmarked ? Colors.blueAccent : Colors.white,
                   key: ValueKey(isBookmarked),
                 ),
               ),
@@ -201,8 +201,7 @@ class _BookdetailState extends State<Bookdetail> with TickerProviderStateMixin {
                                   borderRadius: BorderRadius.circular(20),
                                   boxShadow: [
                                     BoxShadow(
-                                      color:
-                                          colorScheme.primary.withOpacity(0.6),
+                                      color: Colors.blueAccent.withOpacity(0.6),
                                       blurRadius: 30,
                                       spreadRadius: 5,
                                     ),
@@ -316,7 +315,7 @@ class _BookdetailState extends State<Bookdetail> with TickerProviderStateMixin {
                     author: widget.author,
                     coverImageUrl: widget.imageUrl,
                   )),
-              backgroundColor: colorScheme.secondary,
+              backgroundColor: Colors.blueAccent.shade400,
               heroTag: "listen",
               icon: const Icon(Icons.headphones, size: 24),
               label: const Text("Listen", style: TextStyle(fontSize: 14)),
@@ -327,7 +326,7 @@ class _BookdetailState extends State<Bookdetail> with TickerProviderStateMixin {
                     bookId: widget.bookId ?? '',
                     bookTitle: widget.title,
                   )),
-              backgroundColor: colorScheme.primary,
+              backgroundColor: Colors.blueAccent,
               heroTag: "read",
               icon: const Icon(Icons.menu_book_outlined, size: 26),
               label: const Text("Read Now", style: TextStyle(fontSize: 16)),
@@ -346,17 +345,17 @@ class _BookdetailState extends State<Bookdetail> with TickerProviderStateMixin {
         borderRadius: BorderRadius.circular(20),
         gradient: LinearGradient(
           colors: [
-            Colors.purple.withOpacity(0.6),
-            Colors.blue.withOpacity(0.6)
+            Colors.blueAccent.withOpacity(0.8),
+            Colors.blueAccent.shade700.withOpacity(0.8)
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         boxShadow: [
           BoxShadow(
-            color: colorScheme.primary.withOpacity(0.6),
-            blurRadius: 30,
-            spreadRadius: 5,
+            color: Colors.blueAccent.withOpacity(0.4),
+            blurRadius: 20,
+            spreadRadius: 2,
           )
         ],
       ),
@@ -384,7 +383,7 @@ class _BookdetailState extends State<Bookdetail> with TickerProviderStateMixin {
         text,
         style: theme.textTheme.titleLarge?.copyWith(
           fontWeight: FontWeight.bold,
-          color: colorScheme.primary,
+          color: Colors.blueAccent,
         ),
       ),
     );
