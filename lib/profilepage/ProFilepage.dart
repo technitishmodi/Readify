@@ -102,7 +102,7 @@ class _ProfilepageState extends State<Profilepage>
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () => Get.to(() => const AddNewbook()),
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: Colors.blueAccent,
         child: const Icon(Icons.add, color: Colors.white),
       ),
       body: Obx(() {
@@ -120,8 +120,8 @@ class _ProfilepageState extends State<Profilepage>
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    Theme.of(context).colorScheme.primary,
-                    Theme.of(context).colorScheme.secondary,
+                    Colors.blueAccent,
+                    Colors.blueAccent.shade700,
                   ],
                 ),
               ),
@@ -433,14 +433,14 @@ class _ProfilepageState extends State<Profilepage>
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 8, vertical: 4),
                                 decoration: BoxDecoration(
-                                  color: Colors.amber.withOpacity(0.2),
+                                  color: Colors.blueAccent.withOpacity(0.2),
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     const Icon(Icons.star,
-                                        color: Colors.amber, size: 16),
+                                        color: Colors.blueAccent, size: 16),
                                     const SizedBox(width: 4),
                                     Text(
                                       (double.tryParse(book.ratings ?? '0')
@@ -495,7 +495,7 @@ class _ProfilepageState extends State<Profilepage>
                         value: 'edit',
                         child: Row(
                           children: [
-                            Icon(Icons.edit, color: Colors.blue, size: 18),
+                            Icon(Icons.edit, color: Colors.blueAccent, size: 18),
                             SizedBox(width: 8),
                             Text('Edit'),
                           ],
@@ -630,7 +630,7 @@ class _ProfilepageState extends State<Profilepage>
 
   Widget _buildDefaultAvatar() {
     return Container(
-      color: Colors.blue[200],
+      color: Colors.blueAccent.shade200,
       child: const Center(
         child: Icon(
           Icons.person,
